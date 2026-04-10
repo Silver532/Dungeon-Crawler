@@ -1,4 +1,4 @@
 [workspace]
 members = [
-    "generator", "temp_ignore",
+    "generator",
 ]
