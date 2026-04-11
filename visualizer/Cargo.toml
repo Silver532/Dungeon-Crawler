@@ -1,0 +1,10 @@
+[package]
+name = "visualizer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+eframe = "0.27"
+generator = { path = "../generator" }
+ndarray = "0.17.2"
+rand = "0.10.1"

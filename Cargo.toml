@@ -1,4 +1,5 @@
 [workspace]
 members = [
-    "generator",
+    "generator", "visualizer"
 ]
+resolver = "3"

@@ -6,4 +6,4 @@ edition = "2024"
 [dependencies]
 fnv = "1.0.7"
 rand = "0.9"
-ndarray = "0.16"
+ndarray = "0.17.2"
