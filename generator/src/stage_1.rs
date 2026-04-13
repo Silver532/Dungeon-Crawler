@@ -47,7 +47,7 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
                 3 => 5,
                 4 => 5,
                 5 => 5,
-                _ => 2,
+                _ => 1,
             };
             if rng.random_range(1..=100) <= erode_chance {
                 tilemap[[row, col]] = 0;
