@@ -5,22 +5,22 @@ use fnv::FnvHasher;
 use rand::{SeedableRng, rngs::StdRng};
 
 pub fn init_rng(input: Option<&str>) -> StdRng {
-    let seed = match input {
+    let seed: u64 = match input {
         Some(s) => {
-            let mut hasher = FnvHasher::default();
+            let mut hasher: FnvHasher = FnvHasher::default();
             s.hash(&mut hasher);
             hasher.finish()
         }
-        None => rand::random::<u64>(), // random seed if none provided
+        None => rand::random::<u64>()
     };
     StdRng::seed_from_u64(seed)
 }
 
 pub mod s1 {
-    pub const DUNGEON_SIZE: usize = 16;
+    pub const DUNGEON_SIZE: usize = 18;
     pub const MID: usize = DUNGEON_SIZE / 2;
-    pub const MAX_BOX_DIM: usize = 12;
-    pub const BOX_COUNT: usize = 3;
+    pub const MAX_BOX_DIM: usize = 11;
+    pub const BOX_COUNT: usize = 4;
     pub const ERODE_COUNT: usize = 5;
 
     pub const NULL:  u8 = 0b00000000;
