@@ -57,12 +57,12 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
 }
 
 fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
-    let t: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
-    let north: ArrayView2<u8>  = t.slice(slice![..-2, 1..-1]);
-    let east: ArrayView2<u8>   = t.slice(slice![1..-1, 2..]);
-    let south: ArrayView2<u8>  = t.slice(slice![2.., 1..-1]);
-    let west: ArrayView2<u8>   = t.slice(slice![1..-1, ..-2]);
-    let centre: ArrayView2<u8> = t.slice(slice![1..-1, 1..-1]);
+    let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
+    let north: ArrayView2<u8>  = tiles.slice(slice![..-2, 1..-1]);
+    let east: ArrayView2<u8>   = tiles.slice(slice![1..-1, 2..]);
+    let south: ArrayView2<u8>  = tiles.slice(slice![2.., 1..-1]);
+    let west: ArrayView2<u8>   = tiles.slice(slice![1..-1, ..-2]);
+    let centre: ArrayView2<u8> = tiles.slice(slice![1..-1, 1..-1]);
 
     let connections: Array2<u8> = (&north | &east.mapv(|v: u8| v << 1) | &south.mapv(|v: u8| v << 2) | &west.mapv(|v: u8| v << 3)) * &centre;
     return connections
@@ -85,8 +85,8 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         }
 
         let connect_count: u8 = match rng.random::<f32>() {
-            r if r >= 0.85 => 3,
-            r if r >= 0.50 => 2,
+            rand if rand >= 0.85 => 3,
+            rand if rand >= 0.50 => 2,
             _ => 1
         }.min(available);
 
