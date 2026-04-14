@@ -1,5 +1,5 @@
-use rand::{Rng, rngs::StdRng};
-use ndarray::{Array2, s as slice};
+use rand::{Rng, rngs::StdRng, seq::SliceRandom};
+use ndarray::{Array2, ArrayView2, s as slice};
 
 use crate::helpers::s1;
 
@@ -56,11 +56,68 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
+    let t: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
+    let north: ArrayView2<u8>  = t.slice(slice![..-2, 1..-1]);
+    let east: ArrayView2<u8>   = t.slice(slice![1..-1, 2..]);
+    let south: ArrayView2<u8>  = t.slice(slice![2.., 1..-1]);
+    let west: ArrayView2<u8>   = t.slice(slice![1..-1, ..-2]);
+    let centre: ArrayView2<u8> = t.slice(slice![1..-1, 1..-1]);
+
+    let connections: Array2<u8> = (&north | &east.mapv(|v: u8| v << 1) | &south.mapv(|v: u8| v << 2) | &west.mapv(|v: u8| v << 3)) * &centre;
+    return connections
+}
+
+fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
+    let connection_map: Array2<u8> = get_possible_connections(tilemap);
+
+    let active: Vec<(usize, usize)> = tilemap.indexed_iter()
+        .filter(|(_, v)| *v != &0)
+        .map(|((r, c), _)| (r, c))
+        .collect();
+
+    for (row, col) in active {
+        let mask: u8 = connection_map[[row-1, col-1]];
+        let available: u8 = mask.count_ones() as u8;
+        if available == 0 {
+            tilemap[[row, col]] = 0;
+            continue;
+        }
+
+        let connect_count: u8 = match rng.random::<f32>() {
+            r if r >= 0.85 => 3,
+            r if r >= 0.50 => 2,
+            _ => 1
+        }.min(available);
+
+        let indices: &[usize] = s1::MASK_TO_INDICES[mask as usize];
+
+        let chosen: Vec<usize> = if connect_count >= available {
+            indices.to_vec()
+        } else if connect_count == 1 {
+            vec![indices[rng.random_range(0..indices.len())]]
+        } else {
+            let mut idx: Vec<usize> = indices.to_vec();
+            idx.shuffle(rng);
+            idx[..connect_count as usize].to_vec()
+        };
+
+        for i in chosen {
+            let dy = s1::DY_DX[i][0] as isize;
+            let dx = s1::DY_DX[i][1] as isize;
+            let ny = (row as isize + dy) as usize;
+            let nx = (col as isize + dx) as usize;
+            tilemap[[row,col]] |= s1::DIR_BITS[i];
+            tilemap[[ny,nx]] |= s1::OPP_BITS[i]
+        }
+    }
+}
+
 pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
     let mut dungeon_map: Array2<u8> = Array2::zeros((s1::DUNGEON_SIZE, s1::DUNGEON_SIZE));
     place_boxes(&mut dungeon_map, rng);
     erode_boxes(&mut dungeon_map, rng);
-    //Connect Rooms
+    connect_rooms(&mut dungeon_map, rng);
     //Clear Pass
     //Trim Dungeon Map
     dungeon_map
