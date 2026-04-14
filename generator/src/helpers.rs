@@ -19,7 +19,7 @@ pub fn init_rng(input: Option<&str>) -> StdRng {
 pub mod s1 {
     pub const DUNGEON_SIZE: usize = 18;
     pub const MID: usize = DUNGEON_SIZE / 2;
-    pub const MAX_BOX_DIM: usize = 13;
+    pub const MAX_BOX_DIM: usize = 14;
     pub const BOX_COUNT: usize = 5;
     pub const ERODE_COUNT: usize = 5;
 

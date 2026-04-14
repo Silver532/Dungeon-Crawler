@@ -5,8 +5,8 @@ use crate::helpers::s1;
 
 fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     for _ in 0..s1::BOX_COUNT {
-        let total: usize = rng.random_range(7..s1::MAX_BOX_DIM);
-        let height: usize = rng.random_range(2..total-2);
+        let total: usize = rng.random_range(8..s1::MAX_BOX_DIM);
+        let height: usize = rng.random_range(2..total-3);
         let width: usize = total - height;
     
         let y_start: usize = rng.random_range(1..s1::MID+1);
@@ -42,10 +42,10 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
             let neighbors: u8 = count_neighbors(&snapshot, row, col);
             let erode_chance: u8 = match neighbors {
                 0 => 100,
-                1 => 80,
-                2 | 3 => 40,
+                1 => 90,
+                2 | 3 => 35,
                 4 | 5 => 15,
-                6 | 7 => 5,
+                6 | 7 => 3,
                 8 => 1,
                 _ => 0,
             };
