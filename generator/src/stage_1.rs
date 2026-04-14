@@ -42,12 +42,12 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
             let neighbors: u8 = count_neighbors(&snapshot, row, col);
             let erode_chance: u8 = match neighbors {
                 0 => 100,
-                1 => 70,
-                2 => 25,
-                3 => 5,
-                4 => 5,
-                5 => 5,
-                _ => 1,
+                1 => 80,
+                2 | 3 => 40,
+                4 | 5 => 15,
+                6 | 7 => 5,
+                8 => 1,
+                _ => 0,
             };
             if rng.random_range(1..=100) <= erode_chance {
                 tilemap[[row, col]] = 0;
