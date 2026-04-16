@@ -1,4 +1,4 @@
-use std::{collections::{HashSet, VecDeque}};
+use std::{collections::{HashSet, VecDeque}, usize};
 
 use rand::{Rng, rngs::StdRng, seq::SliceRandom};
 use ndarray::{Array2, ArrayView2, s as slice};
@@ -160,12 +160,28 @@ fn clear_rooms(tilemap: &mut Array2<u8>) {
     }
 }
 
+fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
+    let mut min_row: usize = usize::MAX;
+    let mut max_row: usize = 0;
+    let mut min_col: usize = usize::MAX;
+    let mut max_col: usize = 0;
+    for ((row, col), &val) in tilemap.indexed_iter() {
+        if val != 0 {
+            min_row = min_row.min(row);
+            max_row = max_row.max(row);
+            min_col = min_col.min(col);
+            max_col = max_col.min(col);
+        }
+    }
+    tilemap.slice(slice![min_row..=max_row, min_col..max_col]).to_owned()
+}
+
 pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
     let mut dungeon_map: Array2<u8> = Array2::zeros((s1::DUNGEON_SIZE, s1::DUNGEON_SIZE));
     place_boxes(&mut dungeon_map, rng);
     erode_boxes(&mut dungeon_map, rng);
     connect_rooms(&mut dungeon_map, rng);
     clear_rooms(&mut dungeon_map);
-    //Trim Dungeon Map
+    let dungeon_map: Array2<u8> = trim_tilemap(dungeon_map);
     dungeon_map
 }
