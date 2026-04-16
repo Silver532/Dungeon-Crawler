@@ -1,7 +1,7 @@
-use ndarray::{Array2};
+use ndarray::Array2;
 
 mod stage_1;
-//mod stage_2;
+mod stage_2;
 //mod stage_3;
 pub mod helpers;
 
