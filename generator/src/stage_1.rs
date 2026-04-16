@@ -1,3 +1,5 @@
+use std::{collections::{HashSet, VecDeque}};
+
 use rand::{Rng, rngs::StdRng, seq::SliceRandom};
 use ndarray::{Array2, ArrayView2, s as slice};
 
@@ -113,12 +115,57 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+fn clear_rooms(tilemap: &mut Array2<u8>) {
+    let active: HashSet<(usize, usize)> = tilemap.indexed_iter()
+        .filter(|(_, v)| **v != 0)
+        .map(|((r, c), _)| (r, c))
+        .collect();
+    let mut unvisited: HashSet<(usize, usize)> = active.clone();
+    let mut groups: Vec<HashSet<(usize, usize)>> = Vec::new();
+    while !unvisited.is_empty() {
+        let start: (usize, usize) = *unvisited.iter().next().unwrap();
+        let mut group: HashSet<(usize,usize)> = HashSet::new();
+        let mut visited: HashSet<(usize,usize)> = HashSet::from([start]);
+        let mut queue: VecDeque<(usize,usize)> = VecDeque::from([start]);
+        while let Some(tile) = queue.pop_front() {
+            group.insert(tile);
+            let row: usize = tile.0;
+            let col: usize = tile.1;
+            let val: u8 = tilemap[[row, col]];
+            for i in 0..4 {
+                if val & (1 << i) != 0 {
+                    let ny: isize = row as isize + s1::DY_DX[i][0] as isize;
+                    let nx: isize = col as isize + s1::DY_DX[i][1] as isize;
+                    if ny >= 0 && nx >= 0 && ny < tilemap.nrows() as isize && nx < tilemap.ncols() as isize {
+                        let neighbor = (ny as usize, nx as usize);
+                        if !visited.contains(&neighbor) {
+                            visited.insert(neighbor);
+                            queue.push_back(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+        groups.push(group);
+        unvisited.retain(|t| !visited.contains(t));
+    }
+    if !groups.is_empty() {
+        if let Some(largest) = groups.iter().max_by_key(|g| g.len()) {
+            for index in active {
+                if !largest.contains(&index) {
+                    tilemap[[index.0, index.1]] = 0;
+                }
+            }
+        }
+    }
+}
+
 pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
     let mut dungeon_map: Array2<u8> = Array2::zeros((s1::DUNGEON_SIZE, s1::DUNGEON_SIZE));
     place_boxes(&mut dungeon_map, rng);
     erode_boxes(&mut dungeon_map, rng);
     connect_rooms(&mut dungeon_map, rng);
-    //Clear Pass
+    clear_rooms(&mut dungeon_map);
     //Trim Dungeon Map
     dungeon_map
 }
