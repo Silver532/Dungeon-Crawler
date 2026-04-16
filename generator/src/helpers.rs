@@ -51,3 +51,111 @@ pub mod s1 {
         &[0, 1, 2, 3],// 1111 NESW
     ];
 }
+
+pub mod enums {
+    #[repr(u8)]
+    #[derive(Clone, Copy, PartialEq)]
+    pub enum Shape {
+        Null = 0,
+        DeadEnd,
+        BossRoom,
+        SmallRoom,
+        LargeRoom,
+        Connection,
+        Corner,
+        Half,
+        SmallCircle,
+        LargeCircle,
+    }
+
+    #[repr(u8)]
+    #[derive(Clone, Copy, PartialEq)]
+    pub enum Theme {
+        NULL = 0,
+        EMPTY,
+        ENTRANCE,
+
+        DeTRAPPED,
+        DeTREASURE,
+        DeHEALTHY,
+        DeGUARDED,
+
+        BrHOARD,
+        BrWIZARD,
+        BrWEAK,
+        BrSTRONG,
+        BrGUARDED,
+        BrDOUBLE,
+
+        SrTRAPPED,
+        SrTREASURE,
+        SrGUARDED,
+        SrCHAOS,
+        SrBASIC,
+        SrFLOODED,
+
+        CnTRAPPED,
+        CnGUARDED,
+        CnBASIC,
+        CnFLOODED,
+
+        LrTRAPPED,
+        LrTREASURE,
+        LrHEALTHY,
+        LrGUARDED,
+        LrCHAOS,
+        LrBASIC,
+        LrFLOODED,
+
+        CrTRAPPED,
+        CrTREASURE,
+        CrGUARDED,
+        CrCHAOS,
+        CrBASIC,
+        CrFLOODED,
+
+        HrTRAPPED,
+        HrTREASURE,
+        HrGUARDED,
+        HrCHAOS,
+        HrBASIC,
+        HrFLOODED,
+
+        ScTRAPPED,
+        ScTREASURE,
+        ScGUARDED,
+        ScCHAOS,
+        ScBASIC,
+        ScFLOODED,
+        
+        LcTRAPPED,
+        LcTREASURE,
+        LcHEALTHY,
+        LcGUARDED,
+        LcCHAOS,
+        LcBASIC,
+        LcFLOODED,
+    }
+
+    #[repr(u8)]
+    #[derive(Clone, Copy, PartialEq)]
+    pub enum Tile {
+        Wall = 0,
+        Floor = 1,
+        Hole = 2,
+        Water = 3,
+        WaterPool = 4,
+        Trap = 5,
+        HealingStation = 6,
+        Chest = 7,
+        LootPile = 8,
+        LootCluster = 9,
+        MonsterSpawner = 10,
+        BossSpawner = 11,
+        Shrine = 12,
+        Entrance = 13,
+        PaintRed = 14,
+        PaintBlue = 15,
+        PaintGreen = 16,
+    }
+}
