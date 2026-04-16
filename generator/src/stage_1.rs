@@ -170,7 +170,7 @@ fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
             min_row = min_row.min(row);
             max_row = max_row.max(row);
             min_col = min_col.min(col);
-            max_col = max_col.min(col);
+            max_col = max_col.max(col);
         }
     }
     tilemap.slice(slice![min_row..=max_row, min_col..max_col]).to_owned()
