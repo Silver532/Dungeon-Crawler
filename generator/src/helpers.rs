@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::hash::{Hash, Hasher};
 use fnv::FnvHasher;
 use rand::{SeedableRng, rngs::StdRng};
