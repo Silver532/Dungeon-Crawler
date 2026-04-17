@@ -29,6 +29,25 @@ pub fn get_room_shape(val: u8, rng: &mut StdRng) -> enums::Shape {
     shapes[dist.sample(rng)]
 }
 
+pub fn get_room_theme(val: enums::Shape, rng: &mut StdRng) -> enums::Theme {
+    use crate::helpers::theme_tables::*;
+    use crate::helpers::enums::Shape::*;
+    let (themes, weights): (&[enums::Theme], &[u8]) = match val {
+        Null => (&TABLE_NULL.0, &TABLE_NULL.1),
+        DeadEnd => (&TABLE_DEAD_END.0, &TABLE_DEAD_END.1),
+        BossRoom => (&TABLE_BOSS_ROOM.0, &TABLE_BOSS_ROOM.1),
+        SmallRoom => (&TABLE_SMALL_ROOM.0, &TABLE_SMALL_ROOM.1),
+        LargeRoom => (&TABLE_LARGE_ROOM.0, &TABLE_LARGE_ROOM.1),
+        Connection => (&TABLE_CONNECTION.0, &TABLE_CONNECTION.1),
+        Corner => (&TABLE_CORNER.0, &TABLE_CORNER.1),
+        Half => (&TABLE_HALF.0, &TABLE_HALF.1),
+        SmallCircle => (&TABLE_SMALL_CIRCLE.0, &TABLE_SMALL_CIRCLE.1),
+        LargeCircle => (&TABLE_LARGE_CIRCLE.0, &TABLE_LARGE_CIRCLE.1),
+    };
+    let dist: WeightedIndex<u8> = WeightedIndex::new(weights).unwrap();
+    themes[dist.sample(rng)]
+}
+
 pub mod s1 {
     pub const DUNGEON_SIZE: usize = 18;
     pub const MID: usize = DUNGEON_SIZE / 2;
@@ -79,6 +98,24 @@ pub mod enums {
         Half,
         SmallCircle,
         LargeCircle,
+    }
+
+    impl From<u8> for Shape {
+        fn from(val: u8) -> Self {
+            match val {
+                0 => Shape::Null,
+                1 => Shape::DeadEnd,
+                2 => Shape::BossRoom,
+                3 => Shape::SmallRoom,
+                4 => Shape::LargeRoom,
+                5 => Shape::Connection,
+                6 => Shape::Corner,
+                7 => Shape::Half,
+                8 => Shape::SmallCircle,
+                9 => Shape::LargeCircle,
+                _ => Shape::Null,
+            }
+        }
     }
 
     #[repr(u8)]
@@ -196,5 +233,51 @@ mod shape_tables {
     pub const TABLE_4: ([Shape; 4], [u8; 4]) = (
         [Shape::Connection, Shape::SmallRoom, Shape::LargeRoom, Shape::LargeCircle],
         [15, 28, 40, 17]
+    );
+}
+
+mod theme_tables {
+    use crate::helpers::enums::Theme;
+
+    pub const TABLE_NULL:         ([Theme; 1], [u8; 1]) = (
+        [Theme::NULL],
+        [100]
+    );
+
+    pub const TABLE_DEAD_END:     ([Theme; 5], [u8; 5]) = (
+        [Theme::DeTRAPPED, Theme::DeTREASURE, Theme::DeHEALTHY, Theme::DeGUARDED, Theme::EMPTY],
+        [20, 15, 10, 15, 40]
+    );
+    pub const TABLE_BOSS_ROOM:    ([Theme; 6], [u8; 6]) = (
+        [Theme::BrHOARD, Theme::BrWIZARD, Theme::BrWEAK, Theme::BrSTRONG, Theme::BrGUARDED, Theme::BrDOUBLE],
+        [20, 20, 20, 10, 20, 10]
+    );
+    pub const TABLE_SMALL_ROOM:   ([Theme; 7], [u8; 7]) = (
+        [Theme::SrTRAPPED, Theme::SrTREASURE, Theme::SrGUARDED, Theme::SrCHAOS, Theme::SrBASIC, Theme::SrFLOODED, Theme::EMPTY],
+        [20, 10, 15, 10, 25, 10, 10]
+    );
+    pub const TABLE_CONNECTION:   ([Theme; 5], [u8; 5]) = (
+        [Theme::CnTRAPPED, Theme::CnGUARDED, Theme::CnBASIC, Theme::CnFLOODED, Theme::EMPTY],
+        [20, 20, 25, 10, 25]
+    );
+    pub const TABLE_LARGE_ROOM:   ([Theme; 8], [u8; 8]) = (
+        [Theme::LrTRAPPED, Theme::LrTREASURE, Theme::LrHEALTHY, Theme::LrGUARDED, Theme::LrCHAOS, Theme::LrBASIC, Theme::LrFLOODED, Theme::EMPTY],
+        [20,  5,  5, 15, 10, 25, 10, 10]
+    );
+    pub const TABLE_CORNER:       ([Theme; 7], [u8; 7]) = (
+        [Theme::CrTRAPPED, Theme::CrTREASURE, Theme::CrGUARDED, Theme::CrCHAOS, Theme::CrBASIC, Theme::CrFLOODED, Theme::EMPTY],
+        [20, 10, 15, 10, 25, 10, 10]
+    );
+    pub const TABLE_HALF:         ([Theme; 7], [u8; 7]) = (
+        [Theme::HrTRAPPED, Theme::HrTREASURE, Theme::HrGUARDED, Theme::HrCHAOS, Theme::HrBASIC, Theme::HrFLOODED, Theme::EMPTY],
+        [20, 10, 15, 10, 25, 10, 10]
+    );
+    pub const TABLE_SMALL_CIRCLE: ([Theme; 7], [u8; 7]) = (
+        [Theme::ScTRAPPED, Theme::ScTREASURE, Theme::ScGUARDED, Theme::ScCHAOS, Theme::ScBASIC, Theme::ScFLOODED, Theme::EMPTY],
+        [20, 10, 15, 10, 25, 10, 10]
+    );
+    pub const TABLE_LARGE_CIRCLE: ([Theme; 8], [u8; 8]) = (
+        [Theme::LcTRAPPED, Theme::LcTREASURE, Theme::LcHEALTHY, Theme::LcGUARDED, Theme::LcCHAOS, Theme::LcBASIC, Theme::LcFLOODED, Theme::EMPTY],
+        [20,  5,  5, 15, 10, 25, 10, 10]
     );
 }
