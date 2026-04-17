@@ -3,6 +3,7 @@
 use std::hash::{Hash, Hasher};
 use fnv::FnvHasher;
 use rand::{SeedableRng, rngs::StdRng};
+use rand::distr::{Distribution, weighted::WeightedIndex};
 
 pub fn init_rng(input: Option<&str>) -> StdRng {
     let seed: u64 = match input {
@@ -14,6 +15,20 @@ pub fn init_rng(input: Option<&str>) -> StdRng {
         None => rand::random::<u64>()
     };
     StdRng::seed_from_u64(seed)
+}
+
+pub fn get_room_shape(val: u8, rng: &mut StdRng) -> enums::Shape {
+    use crate::helpers::tables::*;
+    let (shapes, weights): (&[enums::Shape], &[u8]) = match (val & 0x0F).count_ones() {
+        0 => (&SHAPES_0, &WEIGHTS_0),
+        1 => (&SHAPES_1, &WEIGHTS_1),
+        2 => (&SHAPES_2, &WEIGHTS_2),
+        3 => (&SHAPES_3, &WEIGHTS_3),
+        4 => (&SHAPES_4, &WEIGHTS_4),
+        _ => (&SHAPES_0, &WEIGHTS_0),
+    };
+    let dist: WeightedIndex<u8> = WeightedIndex::new(weights).unwrap();
+    shapes[dist.sample(rng)]
 }
 
 pub mod s1 {
@@ -158,4 +173,49 @@ pub mod enums {
         PaintBlue = 15,
         PaintGreen = 16,
     }
+}
+
+pub mod tables {
+    use crate::helpers::enums::Shape;
+
+    pub const SHAPES_0: [Shape; 1] = [
+        Shape::Null
+    ];
+    pub const WEIGHTS_0: [u8; 1] = [100];
+
+    pub const SHAPES_1: [Shape; 5] = [
+        Shape::DeadEnd,
+        Shape::BossRoom,
+        Shape::SmallRoom,
+        Shape::SmallCircle,
+        Shape::LargeCircle
+    ];
+    pub const WEIGHTS_1: [u8; 5] = [30, 10, 35, 15, 10];
+
+    pub const SHAPES_2: [Shape; 5] = [
+        Shape::Connection,
+        Shape::SmallRoom,
+        Shape::LargeRoom,
+        Shape::Corner,
+        Shape::SmallCircle
+    ];
+    pub const WEIGHTS_2: [u8; 5] = [16, 27, 20, 22, 15];
+
+    pub const SHAPES_3: [Shape; 6] = [
+        Shape::Connection,
+        Shape::SmallRoom,
+        Shape::LargeRoom,
+        Shape::Half,
+        Shape::SmallCircle,
+        Shape::LargeCircle
+    ];
+    pub const WEIGHTS_3: [u8; 6] = [17, 24, 22, 17, 12, 8];
+
+    pub const SHAPES_4: [Shape; 4] = [
+        Shape::Connection,
+        Shape::SmallRoom,
+        Shape::LargeRoom,
+        Shape::LargeCircle
+    ];
+    pub const WEIGHTS_4: [u8; 4] = [15, 28, 40, 17];
 }
