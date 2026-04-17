@@ -16,14 +16,14 @@ pub fn init_rng(input: Option<&str>) -> StdRng {
 }
 
 pub fn get_room_shape(val: u8, rng: &mut StdRng) -> enums::Shape {
-    use crate::helpers::tables::*;
+    use crate::helpers::shape_tables::*;
     let (shapes, weights): (&[enums::Shape], &[u8]) = match (val & 0x0F).count_ones() {
-        0 => (&SHAPES_0, &WEIGHTS_0),
-        1 => (&SHAPES_1, &WEIGHTS_1),
-        2 => (&SHAPES_2, &WEIGHTS_2),
-        3 => (&SHAPES_3, &WEIGHTS_3),
-        4 => (&SHAPES_4, &WEIGHTS_4),
-        _ => (&SHAPES_0, &WEIGHTS_0),
+        0 => (&TABLE_0.0, &TABLE_1.1),
+        1 => (&TABLE_1.0, &TABLE_1.1),
+        2 => (&TABLE_2.0, &TABLE_2.1),
+        3 => (&TABLE_3.0, &TABLE_3.1),
+        4 => (&TABLE_4.0, &TABLE_4.1),
+        _ => (&TABLE_0.0, &TABLE_0.1),
     };
     let dist: WeightedIndex<u8> = WeightedIndex::new(weights).unwrap();
     shapes[dist.sample(rng)]
@@ -173,47 +173,28 @@ pub mod enums {
     }
 }
 
-pub mod tables {
+mod shape_tables {
     use crate::helpers::enums::Shape;
 
-    pub const SHAPES_0: [Shape; 1] = [
-        Shape::Null
-    ];
-    pub const WEIGHTS_0: [u8; 1] = [100];
+    pub const TABLE_0: ([Shape; 1], [u8; 1]) = ([Shape::Null], [100]);
 
-    pub const SHAPES_1: [Shape; 5] = [
-        Shape::DeadEnd,
-        Shape::BossRoom,
-        Shape::SmallRoom,
-        Shape::SmallCircle,
-        Shape::LargeCircle
-    ];
-    pub const WEIGHTS_1: [u8; 5] = [30, 10, 35, 15, 10];
+    pub const TABLE_1: ([Shape; 5], [u8; 5]) = (
+        [Shape::DeadEnd, Shape::BossRoom, Shape::SmallRoom, Shape::SmallCircle, Shape::LargeCircle],
+        [30, 10, 35, 15, 10]
+    );
 
-    pub const SHAPES_2: [Shape; 5] = [
-        Shape::Connection,
-        Shape::SmallRoom,
-        Shape::LargeRoom,
-        Shape::Corner,
-        Shape::SmallCircle
-    ];
-    pub const WEIGHTS_2: [u8; 5] = [16, 27, 20, 22, 15];
+    pub const TABLE_2: ([Shape; 5], [u8; 5]) = (
+        [Shape::Connection, Shape::SmallRoom, Shape::LargeRoom, Shape::Corner, Shape::SmallCircle],
+        [16, 27, 20, 22, 15]
+    );
 
-    pub const SHAPES_3: [Shape; 6] = [
-        Shape::Connection,
-        Shape::SmallRoom,
-        Shape::LargeRoom,
-        Shape::Half,
-        Shape::SmallCircle,
-        Shape::LargeCircle
-    ];
-    pub const WEIGHTS_3: [u8; 6] = [17, 24, 22, 17, 12, 8];
+    pub const TABLE_3: ([Shape; 6], [u8; 6]) = (
+        [Shape::Connection, Shape::SmallRoom, Shape::LargeRoom, Shape::Half, Shape::SmallCircle, Shape::LargeCircle],
+        [17, 24, 22, 17, 12, 8]
+    );
 
-    pub const SHAPES_4: [Shape; 4] = [
-        Shape::Connection,
-        Shape::SmallRoom,
-        Shape::LargeRoom,
-        Shape::LargeCircle
-    ];
-    pub const WEIGHTS_4: [u8; 4] = [15, 28, 40, 17];
+    pub const TABLE_4: ([Shape; 4], [u8; 4]) = (
+        [Shape::Connection, Shape::SmallRoom, Shape::LargeRoom, Shape::LargeCircle],
+        [15, 28, 40, 17]
+    );
 }
