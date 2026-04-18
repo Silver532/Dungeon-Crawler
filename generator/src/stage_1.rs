@@ -165,6 +165,50 @@ fn clear_rooms(tilemap: &mut Array2<u8>) {
     }
 }
 
+fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
+    let one_exit_list: Vec<(usize, usize)> = tilemap.indexed_iter()
+        .filter(|(_, v)| v.count_ones() == 2)
+        .map(|((r, c), _)| (r, c))
+        .collect();
+    if !one_exit_list.is_empty() {return;}
+
+    let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 { 1 } else { 0 });
+    let empty: Array2<u8> = 1 - &tiles;
+    let north: ArrayView2<u8> = tiles.slice(slice![..-2, 1..-1]);
+    let east: ArrayView2<u8>  = tiles.slice(slice![1..-1, 2..]);
+    let south: ArrayView2<u8> = tiles.slice(slice![2..,  1..-1]);
+    let west: ArrayView2<u8>  = tiles.slice(slice![1..-1, ..-2]);
+    let centre: ArrayView2<u8> = empty.slice(slice![1..-1, 1..-1]);
+
+    let candidates: Array2<u8> = (&north | &east | &south | &west) * &centre;
+    
+    let indices: Vec<(usize, usize)> = candidates.indexed_iter()
+        .filter(|(_, v)| **v != 0)
+        .map(|((r, c), _)| (r + 1, c + 1))
+        .collect();
+
+    if indices.is_empty() {
+        tilemap[[s1::MID, s1::MID]]     = s1::ROOM | s1::SOUTH;
+        tilemap[[s1::MID + 1, s1::MID]] = s1::ROOM | s1::NORTH;
+        return;
+    }
+
+    let (row, col) = indices[rng.random_range(0..indices.len())];
+    let (rows, cols) = tilemap.dim();
+    for (i, [dy, dx]) in s1::DY_DX.iter().enumerate() {
+        let nr: i8 = row as i8 + dy;
+        let nc: i8 = col as i8 + dx;
+        if nr < 0 || nc < 0 { continue; }
+        let (nr, nc) = (nr as usize, nc as usize);
+        if nr >= rows || nc >= cols { continue; }
+        if tilemap[[nr, nc]] != 0 {
+            tilemap[[row, col]] = s1::ROOM | s1::OPP_BITS[i];
+            tilemap[[nr, nc]] |= s1::DIR_BITS[i];
+            return;
+        }
+    }
+}
+
 fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
     let mut min_row: usize = usize::MAX;
     let mut max_row: usize = 0;
@@ -187,6 +231,7 @@ pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
     erode_boxes(&mut dungeon_map, rng);
     connect_rooms(&mut dungeon_map, rng);
     clear_rooms(&mut dungeon_map);
+    prep_entrance(&mut dungeon_map, rng);
     let dungeon_map: Array2<u8> = trim_tilemap(dungeon_map);
     dungeon_map
 }
