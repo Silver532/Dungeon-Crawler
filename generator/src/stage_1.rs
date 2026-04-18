@@ -6,6 +6,7 @@ use ndarray::{Array2, ArrayView2, s as slice};
 use crate::helpers::s1;
 
 fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
+    debug_assert!(s1::MAX_BOX_DIM >= 12, "MAX_BOX_DIM too small for box generation ranges");
     for _ in 0..s1::BOX_COUNT {
         let total: usize = rng.random_range(8..s1::MAX_BOX_DIM);
         let height: usize = rng.random_range(2..total-3);
