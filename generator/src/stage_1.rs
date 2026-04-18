@@ -67,7 +67,11 @@ fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
     let west: ArrayView2<u8>   = tiles.slice(slice![1..-1, ..-2]);
     let centre: ArrayView2<u8> = tiles.slice(slice![1..-1, 1..-1]);
 
-    let connections: Array2<u8> = (&north | &east.mapv(|v: u8| v << 1) | &south.mapv(|v: u8| v << 2) | &west.mapv(|v: u8| v << 3)) * &centre;
+    let connections: Array2<u8> = (&north
+        | &east.mapv(|v: u8| v << 1)
+        | &south.mapv(|v: u8| v << 2)
+        | &west.mapv(|v: u8| v << 3))
+        * &centre;
     return connections
 }
 
