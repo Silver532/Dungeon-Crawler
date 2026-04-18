@@ -55,7 +55,6 @@ pub mod s1 {
     pub const BOX_COUNT: usize = 5;
     pub const ERODE_COUNT: usize = 5;
 
-    pub const NULL:  u8 = 0b00000000;
     pub const ROOM:  u8 = 0b00010000;
     pub const NORTH: u8 = 0b00000001;
     pub const EAST:  u8 = 0b00000010;
