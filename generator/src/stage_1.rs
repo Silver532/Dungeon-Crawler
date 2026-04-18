@@ -222,7 +222,7 @@ fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
             max_col = max_col.max(col);
         }
     }
-    tilemap.slice(slice![min_row..=max_row, min_col..max_col]).to_owned()
+    tilemap.slice(slice![min_row..=max_row, min_col..=max_col]).to_owned()
 }
 
 pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
