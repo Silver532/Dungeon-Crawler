@@ -18,7 +18,7 @@ pub fn init_rng(input: Option<&str>) -> StdRng {
 pub fn get_room_shape(val: u8, rng: &mut StdRng) -> enums::Shape {
     use crate::helpers::shape_tables::*;
     let (shapes, weights): (&[enums::Shape], &[u8]) = match (val & 0x0F).count_ones() {
-        0 => (&TABLE_0.0, &TABLE_1.1),
+        0 => (&TABLE_0.0, &TABLE_0.1),
         1 => (&TABLE_1.0, &TABLE_1.1),
         2 => (&TABLE_2.0, &TABLE_2.1),
         3 => (&TABLE_3.0, &TABLE_3.1),
@@ -34,6 +34,7 @@ pub fn get_room_theme(val: enums::Shape, rng: &mut StdRng) -> enums::Theme {
     use crate::helpers::enums::Shape::*;
     let (themes, weights): (&[enums::Theme], &[u8]) = match val {
         Null => (&TABLE_NULL.0, &TABLE_NULL.1),
+        Entrance => (&TABLE_ENTRANCE.0, &TABLE_ENTRANCE.1),
         DeadEnd => (&TABLE_DEAD_END.0, &TABLE_DEAD_END.1),
         BossRoom => (&TABLE_BOSS_ROOM.0, &TABLE_BOSS_ROOM.1),
         SmallRoom => (&TABLE_SMALL_ROOM.0, &TABLE_SMALL_ROOM.1),
@@ -88,6 +89,7 @@ pub mod enums {
     #[derive(Clone, Copy, PartialEq)]
     pub enum Shape {
         Null = 0,
+        Entrance,
         DeadEnd,
         BossRoom,
         SmallRoom,
@@ -103,15 +105,16 @@ pub mod enums {
         fn from(val: u8) -> Self {
             match val {
                 0 => Shape::Null,
-                1 => Shape::DeadEnd,
-                2 => Shape::BossRoom,
-                3 => Shape::SmallRoom,
-                4 => Shape::LargeRoom,
-                5 => Shape::Connection,
-                6 => Shape::Corner,
-                7 => Shape::Half,
-                8 => Shape::SmallCircle,
-                9 => Shape::LargeCircle,
+                1 => Shape::Entrance,
+                2 => Shape::DeadEnd,
+                3 => Shape::BossRoom,
+                4 => Shape::SmallRoom,
+                5 => Shape::LargeRoom,
+                6 => Shape::Connection,
+                7 => Shape::Corner,
+                8 => Shape::Half,
+                9 => Shape::SmallCircle,
+                10 => Shape::LargeCircle,
                 _ => Shape::Null,
             }
         }
@@ -240,6 +243,11 @@ mod theme_tables {
 
     pub const TABLE_NULL:         ([Theme; 1], [u8; 1]) = (
         [Theme::NULL],
+        [100]
+    );
+
+    pub const TABLE_ENTRANCE:     ([Theme; 1], [u8; 1]) = (
+        [Theme::ENTRANCE],
         [100]
     );
 
