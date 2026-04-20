@@ -7,10 +7,11 @@ pub fn show(ui: &mut egui::Ui, state: &mut AppState) {
         ui.label(egui::RichText::new("Dungeon Crawler Control Panel v0.1").size(24.0).strong());
         ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
             if ui.button("Info").clicked() {
-                // DOES NOTHING RIGHT NOW -- Add Info Panel
+                *state = AppState::Info
             }
         });
     });
+    ui.add_space(16.0);
     egui::Grid::new("menu_grid").show(ui, |ui| {
         ui.label(egui::RichText::new("Debug Tools").size(16.0).strong());
         ui.end_row();
