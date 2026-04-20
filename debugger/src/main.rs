@@ -1,4 +1,5 @@
 mod menu;
+mod info;
 mod generator;
 
 use eframe::{egui};
@@ -7,6 +8,7 @@ use eframe::{egui};
 enum AppState {
     Menu,
     Generator,
+    Info,
 }
 
 struct App {
@@ -46,6 +48,7 @@ impl eframe::App for App {
             match self.state {
                 AppState::Menu => menu::show(ui, &mut self.state),
                 AppState::Generator => generator::show(ui, &mut self.state, &mut self.seed_string),
+                AppState::Info => info::show(ui, &mut self.state),
             }
         });
     }
