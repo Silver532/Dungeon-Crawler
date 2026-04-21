@@ -53,6 +53,9 @@ fn generate_seed(input: Option<&str>) -> u64 {
     }
 }
 
+fn time_test(stage: Stages, count: u32) {
+}
+
 pub fn show(
     ui: &mut egui::Ui,
     state: &mut AppState,
@@ -136,6 +139,5 @@ pub fn show(
         for seed in &generator.recent_seeds {
             ui.label(seed);
         }
-    });
     });
 }
