@@ -1,6 +1,6 @@
 mod menu;
 mod info;
-mod generator;
+mod gen_debug;
 
 use eframe::{egui};
 
@@ -15,7 +15,7 @@ struct App {
     initialized: bool,
     state: AppState,
     prev_state: AppState,
-    generator: generator::GeneratorState,
+    generator: gen_debug::GeneratorState,
 }
 
 impl Default for App {
@@ -24,7 +24,7 @@ impl Default for App {
             initialized: false,
             state: AppState::Menu,
             prev_state: AppState::Menu,
-            generator: generator::GeneratorState::default(),
+            generator: gen_debug::GeneratorState::default(),
         }
     }
 }
@@ -41,13 +41,13 @@ impl eframe::App for App {
         egui::CentralPanel::default().show_inside(ui, |ui| {
             if self.state != self.prev_state {
                 if self.state == AppState::Generator {
-                    self.generator = generator::GeneratorState::default();
+                    self.generator = gen_debug::GeneratorState::default();
                 }
                 self.prev_state = self.state;
             }
             match self.state {
                 AppState::Menu => menu::show(ui, &mut self.state),
-                AppState::Generator => generator::show(
+                AppState::Generator => gen_debug::show(
                     ui,
                     &mut self.state,
                     &mut self.generator
