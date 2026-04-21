@@ -131,5 +131,10 @@ pub fn show(
                 }
             }
         });
+    ui.vertical(|ui| {
+        for seed in &generator.recent_seeds {
+            ui.label(seed);
+        }
+    });
     });
 }
