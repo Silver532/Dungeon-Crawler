@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 eframe = "0.34.1"
+fnv = "1.0.7"
+rand = "0.10.1"

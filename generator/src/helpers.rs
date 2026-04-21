@@ -1,18 +1,8 @@
-use std::hash::{Hash, Hasher};
-use fnv::FnvHasher;
 use rand::{SeedableRng, rngs::StdRng};
 use rand::distr::{Distribution, weighted::WeightedIndex};
 
-pub fn init_rng(input: Option<&str>) -> StdRng {
-    let seed: u64 = match input {
-        Some(s) => {
-            let mut hasher: FnvHasher = FnvHasher::default();
-            s.hash(&mut hasher);
-            hasher.finish()
-        }
-        None => rand::random::<u64>()
-    };
-    StdRng::seed_from_u64(seed)
+pub fn init_rng(input: u64) -> StdRng {
+    StdRng::seed_from_u64(input)
 }
 
 pub fn get_room_shape(val: u8, rng: &mut StdRng) -> enums::Shape {

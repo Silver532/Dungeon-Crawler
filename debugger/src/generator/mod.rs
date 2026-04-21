@@ -1,4 +1,6 @@
 use std::collections::VecDeque;
+use std::hash::{Hash, Hasher};
+use fnv::FnvHasher;
 
 use eframe::egui;
 use crate::AppState;
@@ -25,7 +27,7 @@ pub struct GeneratorState {
     pub time_check: bool,
     pub test_count: u16,
     pub selected_stage: Stages,
-    pub _recent_seeds: VecDeque<String>,
+    pub recent_seeds: VecDeque<String>,
 }
 
 impl Default for GeneratorState {
@@ -34,9 +36,20 @@ impl Default for GeneratorState {
             seed_string: "Seed".to_string(),
             time_check: false,
             test_count: 100,
-            _recent_seeds: VecDeque::new(),
+            recent_seeds: VecDeque::new(),
             selected_stage: Stages::Stage1,
         }
+    }
+}
+
+fn generate_seed(input: Option<&str>) -> u64 {
+    match input {
+        Some(s) => {
+            let mut hasher: FnvHasher = FnvHasher::default();
+            s.hash(&mut hasher);
+            hasher.finish()
+        }
+        None => rand::random::<u64>()
     }
 }
 
@@ -82,6 +95,41 @@ pub fn show(
                     ui.selectable_value(&mut generator.test_count, 1000, "1000");
                     ui.selectable_value(&mut generator.test_count, 10000, "10000");
                 });
+        });
+
+        ui.horizontal(|ui| {
+            if ui.button("Run").clicked() {
+                let len = generator.recent_seeds.len();
+                if len >= 10 {
+                    generator.recent_seeds.pop_back();
+                }
+                let seed_string = generator.seed_string.trim();
+                let seed_num = match seed_string {
+                    "Seed" | "" => {
+                        let s = generate_seed(None);
+                        generator.recent_seeds.push_front(s.to_string());
+                        s
+                    },
+                    _ => {
+                        let s = generate_seed(Some(seed_string));
+                        generator.recent_seeds.push_front(seed_string.to_string());
+                        s
+                    },
+                };
+                if generator.time_check {
+                    // match generator.selected_stage {
+                    //     Stages::Stage1 => time_test_stage_1(seed_num, generator.test_count),
+                    //     Stages::Stage2 => time_test_stage_2(seed_num, generator.test_count),
+                    //     Stages::Stage3 => time_test_stage_3(seed_num, generator.test_count),
+                    // }
+                } else {
+                    // match generator.selected_stage {
+                    //     Stages::Stage1 => visualizer::show_stage_1(ctx, seed_num),
+                    //     Stages::Stage2 => visualizer::show_stage_2(ctx, seed_num),
+                    //     Stages::Stage3 => visualizer::show_stage_3(ctx, seed_num),
+                    // }
+                }
+            }
         });
     });
 }
