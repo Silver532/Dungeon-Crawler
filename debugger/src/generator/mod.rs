@@ -104,7 +104,7 @@ pub fn show(
                     generator.recent_seeds.pop_back();
                 }
                 let seed_string = generator.seed_string.trim();
-                let seed_num = match seed_string {
+                let _seed_num = match seed_string {
                     "Seed" | "" => {
                         let s = generate_seed(None);
                         generator.recent_seeds.push_front(s.to_string());
