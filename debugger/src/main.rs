@@ -15,7 +15,7 @@ struct App {
     initialized: bool,
     state: AppState,
     prev_state: AppState,
-    seed_string: String,
+    generator: generator::GeneratorState,
 }
 
 impl Default for App {
@@ -24,7 +24,7 @@ impl Default for App {
             initialized: false,
             state: AppState::Menu,
             prev_state: AppState::Menu,
-            seed_string: "Seed".to_string(),
+            generator: generator::GeneratorState::default(),
         }
     }
 }
@@ -41,13 +41,17 @@ impl eframe::App for App {
         egui::CentralPanel::default().show_inside(ui, |ui| {
             if self.state != self.prev_state {
                 if self.state == AppState::Generator {
-                    self.seed_string = "Seed".to_string();
+                    self.generator = generator::GeneratorState::default();
                 }
                 self.prev_state = self.state;
             }
             match self.state {
                 AppState::Menu => menu::show(ui, &mut self.state),
-                AppState::Generator => generator::show(ui, &mut self.state, &mut self.seed_string),
+                AppState::Generator => generator::show(
+                    ui,
+                    &mut self.state,
+                    &mut self.generator
+                ),
                 AppState::Info => info::show(ui, &mut self.state),
             }
         });
