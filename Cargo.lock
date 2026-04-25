@@ -734,6 +734,8 @@ version = "0.1.0"
 dependencies = [
  "eframe",
  "fnv",
+ "generator",
+ "ndarray",
  "rand 0.10.1",
 ]
 
