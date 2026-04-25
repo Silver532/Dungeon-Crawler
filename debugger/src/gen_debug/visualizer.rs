@@ -8,11 +8,16 @@ use generator::{run_stage_1};
 pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<Vec<(u64, super::Stages)>>>) {
     let layout: Array2<u8> = run_stage_1(seed);
     let viewport_id = egui::ViewportId::from_hash_of(seed);
+    let tile_size = 32.0;
+    let rows = layout.nrows();
+    let cols = layout.ncols();
+    let height = rows as f32 * tile_size;
+    let width = cols as f32 * tile_size;
     ctx.show_viewport_deferred(
         viewport_id,
         ViewportBuilder::default()
             .with_title(format!("Stage 1 - Seed: {}", seed))
-            .with_inner_size([800.0, 600.0]),
+            .with_inner_size([width, height]),
         move |ctx, _| {
             if ctx.input(|i| i.viewport().close_requested()) {
                 active_viewports.lock().retain(|(s, _)| *s != seed)
@@ -22,7 +27,6 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                 .show(ctx, |ui| {
                     let painter = ui.painter();
                     
-                    let tile_size = 32.0;
                     for ((row, col), val) in layout.indexed_iter() {
                         let x = col as f32 * tile_size;
                         let y = row as f32 * tile_size;
