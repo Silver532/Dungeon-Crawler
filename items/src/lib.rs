@@ -26,7 +26,8 @@ impl Part {
 struct Item {
     top: Part,
     middle: Part,
-    bottom: Part
+    bottom: Part,
+    special: Option<Part>
 }
 impl Item {
     fn new(top: &Part, middle: &Part, bottom: &Part) -> Item {
