@@ -8,10 +8,11 @@ use generator::{run_stage_1};
 pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<Vec<(u64, super::Stages)>>>) {
     let layout: Array2<u8> = run_stage_1(seed);
     let viewport_id = egui::ViewportId::from_hash_of(seed);
-    let tile_size = 32.0;
+    let tile_size = 48.0;
+    let text_height = 48.0;
     let rows = layout.nrows();
     let cols = layout.ncols();
-    let height = rows as f32 * tile_size;
+    let height = rows as f32 * tile_size + text_height;
     let width = cols as f32 * tile_size;
     ctx.show_viewport_deferred(
         viewport_id,
@@ -45,6 +46,38 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                         );
                         painter.rect_filled(rect, 0.0, color);
                     }
+                    let hovered_tile = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
+                    let col = (pos.x / tile_size) as usize;
+                    let row = (pos.y / tile_size) as usize;
+                    if pos.y < rows as f32 * tile_size && row < rows && col < cols {
+                        Some((row, col))
+                    } else {
+                        None
+                    }
+                });
+                let text = match hovered_tile {
+                    Some((row, col)) => {
+                        let val = layout[[row, col]];
+                        format!("Tile ({}, {}) - Value: {}\nExits: {}",
+                            row, col,
+                            val,
+                            [("North", 1), ("East", 2), ("South", 4), ("West", 8)]
+                                .iter()
+                                .filter(|(_, bit)| val & bit != 0)
+                                .map(|(name, _)| *name)
+                                .collect::<Vec<_>>()
+                                .join(", ")
+                        )
+                    }
+                    None => String::new(),
+                };
+                painter.text(
+                    egui::pos2(4.0, rows as f32 * tile_size + 2.0),
+                    egui::Align2::LEFT_TOP,
+                    text,
+                    egui::FontId::monospace(text_height*1.5/4.0),
+                    egui::Color32::WHITE,
+                );
                 });
         }
     );
