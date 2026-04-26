@@ -97,7 +97,7 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
     ctx.show_viewport_deferred(
         viewport_id,
         ViewportBuilder::default()
-            .with_title(format!("Stage 1 - Seed: {}", seed))
+            .with_title(format!("Stage 2 - Seed: {}", seed))
             .with_inner_size([width, height]),
         move |ctx, _| {
             if ctx.input(|i| i.viewport().close_requested()) {
