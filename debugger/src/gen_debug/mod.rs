@@ -64,14 +64,14 @@ fn time_test(stage: &Stages, count: u16) {
     match stage {
         Stages::Stage1 => {
             for _ in 0..count {
-                let seed = rand::random::<u64>();
+                let seed: u64 = rand::random::<u64>();
                 _ = run_stage_1(seed)
                 //Do something with time testing here
             }
         },
         Stages::Stage2 => {
             for _ in 0..count {
-                let seed = rand::random::<u64>();
+                let seed: u64 = rand::random::<u64>();
                 _ = run_stage_2(seed)
                 //Do something with time testing here
             }
@@ -171,6 +171,7 @@ pub fn show(
     for (seed, stage) in generator.active_viewports.lock().iter() {
         match stage {
             Stages::Stage1 => visualizer::show_stage_1(&ctx, *seed, Arc::clone(&generator.active_viewports)),
+            Stages::Stage2 => visualizer::show_stage_2(&ctx, *seed, Arc::clone(&generator.active_viewports)),
             _ => {} //Nothing built yet, so no code here
         }
     }
