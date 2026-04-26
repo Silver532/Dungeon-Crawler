@@ -1,5 +1,3 @@
-#[allow(dead_code)]
-
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum Position {
@@ -30,7 +28,7 @@ struct Item {
     special: Option<Part>
 }
 impl Item {
-    fn new(top: &Part, middle: &Part, bottom: &Part) -> Item {
-        Item {top: top.clone(), middle: middle.clone(), bottom: bottom.clone()}
+    fn new(top: Part, middle: Part, bottom: Part, special: Option<Part>) -> Item {
+        Item {top: top, middle: middle, bottom: bottom, special: special}
     }
 }
