@@ -9,12 +9,12 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
     let layout: Array2<u8> = run_stage_1(seed);
     let viewport_id: egui::ViewportId = egui::ViewportId::from_hash_of((seed, "stage1"));
     let tile_size: f32 = 48.0;
-    let text_rows: u8 = 2;
-    let text_height: f32 = (tile_size/2.0) * text_rows as f32;
+    let text_height: f32 = 48.0;
     let rows: usize = layout.nrows();
     let cols: usize = layout.ncols();
     let height: f32 = rows as f32 * tile_size + text_height;
     let width: f32 = cols as f32 * tile_size;
+    let current_stage: super::Stages = super::Stages::Stage1;
     ctx.show_viewport_deferred(
         viewport_id,
         ViewportBuilder::default()
@@ -22,7 +22,7 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
             .with_inner_size([width, height]),
         move |ctx, _| {
             if ctx.input(|i| i.viewport().close_requested()) {
-                active_viewports.lock().retain(|(s, _)| *s != seed)
+                active_viewports.lock().retain(|(s, stage)| !(*s == seed && *stage == current_stage));
             }
             egui::Area::new(egui::Id::new("visualizer_area"))
                 .fixed_pos([0.0, 0.0])
@@ -32,7 +32,7 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                     for ((row, col), val) in layout.indexed_iter() {
                         let x: f32 = col as f32 * tile_size;
                         let y: f32 = row as f32 * tile_size;
-                        let color = match val.count_ones() {
+                        let color: egui::Color32 = match val.count_ones() {
                             0 => egui::Color32::BLACK,
                             1 => egui::Color32::WHITE,
                             2 => egui::Color32::GREEN,
@@ -76,7 +76,7 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                     egui::pos2(4.0, rows as f32 * tile_size + 2.0),
                     egui::Align2::LEFT_TOP,
                     text,
-                    egui::FontId::monospace(text_height*1.5/4.0),
+                    egui::FontId::monospace(18.0),
                     egui::Color32::WHITE,
                 );
                 });
@@ -88,12 +88,12 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
     let ((shape_map, theme_map), layout): ((Array2<u8>, Array2<u8>), Array2<u8>) = run_stage_2(seed);
     let viewport_id: egui::ViewportId = egui::ViewportId::from_hash_of((seed, "stage2"));
     let tile_size: f32 = 48.0;
-    let text_rows: u8 = 3;
-    let text_height: f32 = (tile_size/2.0) * text_rows as f32;
+    let text_height: f32 = 72.0;
     let rows: usize = layout.nrows();
     let cols: usize = layout.ncols();
     let height: f32 = rows as f32 * tile_size + text_height;
     let width: f32 = cols as f32 * tile_size;
+    let current_stage: super::Stages = super::Stages::Stage2;
     ctx.show_viewport_deferred(
         viewport_id,
         ViewportBuilder::default()
@@ -101,17 +101,17 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
             .with_inner_size([width, height]),
         move |ctx, _| {
             if ctx.input(|i| i.viewport().close_requested()) {
-                active_viewports.lock().retain(|(s, _)| *s != seed)
+                active_viewports.lock().retain(|(s, stage)| !(*s == seed && *stage == current_stage));
             }
             egui::Area::new(egui::Id::new("visualizer_area"))
                 .fixed_pos([0.0, 0.0])
                 .show(ctx, |ui| {
-                    let painter = ui.painter();
+                    let painter: &egui::Painter = ui.painter();
                     
                     for ((row, col), val) in layout.indexed_iter() {
-                        let x = col as f32 * tile_size;
-                        let y = row as f32 * tile_size;
-                        let color = match val.count_ones() {
+                        let x: f32 = col as f32 * tile_size;
+                        let y: f32 = row as f32 * tile_size;
+                        let color: egui::Color32 = match val.count_ones() {
                             0 => egui::Color32::BLACK,
                             1 => egui::Color32::WHITE,
                             2 => egui::Color32::GREEN,
@@ -157,7 +157,7 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                     egui::pos2(4.0, rows as f32 * tile_size + 2.0),
                     egui::Align2::LEFT_TOP,
                     text,
-                    egui::FontId::monospace(12.0),
+                    egui::FontId::monospace(18.0),
                     egui::Color32::WHITE,
                 );
                 });
