@@ -1,6 +1,8 @@
 use rand::{SeedableRng, rngs::StdRng};
 use rand::distr::{Distribution, weighted::WeightedIndex};
 
+use crate::helpers::enums::Tile;
+
 pub fn init_rng(input: u64) -> StdRng {
     StdRng::seed_from_u64(input)
 }
@@ -243,7 +245,7 @@ impl From<u8> for Theme {
 }
 
     #[repr(u8)]
-    #[derive(Clone, Copy, PartialEq)]
+    #[derive(Clone, Copy, PartialEq, Debug)]
     pub enum Tile {
         Wall = 0,
         Floor = 1,
@@ -262,6 +264,31 @@ impl From<u8> for Theme {
         PaintRed = 14,
         PaintBlue = 15,
         PaintGreen = 16,
+    }
+}
+
+impl From<u8> for Tile {
+    fn from(val: u8) -> Self {
+        match val {
+            0  => Tile::Wall,
+            1  => Tile::Floor,
+            2  => Tile::Hole,
+            3  => Tile::Water,
+            4  => Tile::WaterPool,
+            5  => Tile::Trap,
+            6  => Tile::HealingStation,
+            7  => Tile::Chest,
+            8  => Tile::LootPile,
+            9  => Tile::LootCluster,
+            10 => Tile::MonsterSpawner,
+            11 => Tile::BossSpawner,
+            12 => Tile::Shrine,
+            13 => Tile::Entrance,
+            14 => Tile::PaintRed,
+            15 => Tile::PaintBlue,
+            16 => Tile::PaintGreen,
+            _  => Tile::Wall,
+        }
     }
 }
 

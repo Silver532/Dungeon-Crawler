@@ -172,7 +172,7 @@ pub fn show(
         match stage {
             Stages::Stage1 => visualizer::show_stage_1(&ctx, *seed, Arc::clone(&generator.active_viewports)),
             Stages::Stage2 => visualizer::show_stage_2(&ctx, *seed, Arc::clone(&generator.active_viewports)),
-            _ => {} //Nothing built yet, so no code here
+            Stages::Stage3 => visualizer::show_stage_3(&ctx, *seed, Arc::clone(&generator.active_viewports)),
         }
     }
 }

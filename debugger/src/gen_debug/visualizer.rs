@@ -3,7 +3,7 @@ use std::sync::Arc;
 use eframe::egui::{self, mutex::Mutex};
 use egui::ViewportBuilder;
 use ndarray::Array2;
-use generator::{helpers::enums::{Shape, Theme}, run_stage_1, run_stage_2};
+use generator::{helpers::enums::{Shape, Theme, Tile}, run_stage_1, run_stage_2, run_stage_3};
 
 pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<Vec<(u64, super::Stages)>>>) {
     let layout: Array2<u8> = run_stage_1(seed);
@@ -160,6 +160,89 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                     egui::FontId::monospace(18.0),
                     egui::Color32::WHITE,
                 );
+                });
+        }
+    );
+}
+
+pub fn show_stage_3(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<Vec<(u64, super::Stages)>>>) {
+    let (tilemap, theme_map): (Array2<u8>, Array2<u8>) = run_stage_3(seed);
+    let viewport_id: egui::ViewportId = egui::ViewportId::from_hash_of((seed, "stage3"));
+    let tile_size: f32 = 4.0;
+    let text_height: f32 = 72.0;
+    let rows: usize = tilemap.nrows();
+    let cols: usize = tilemap.ncols();
+    let height: f32 = rows as f32 * tile_size + text_height;
+    let width: f32 = cols as f32 * tile_size;
+    let current_stage: super::Stages = super::Stages::Stage3;
+    ctx.show_viewport_deferred(
+        viewport_id,
+        ViewportBuilder::default()
+            .with_title(format!("Stage 3 - Seed: {}", seed))
+            .with_inner_size([width, height]),
+        move |ctx, _| {
+            if ctx.input(|i| i.viewport().close_requested()) {
+                active_viewports.lock().retain(|(s, stage)| !(*s == seed && *stage == current_stage));
+            }
+            egui::Area::new(egui::Id::new("visualizer_area"))
+                .fixed_pos([0.0, 0.0])
+                .show(ctx, |ui| {
+                    let painter: &egui::Painter = ui.painter();
+
+                    for ((row, col), val) in tilemap.indexed_iter() {
+                        let x: f32 = col as f32 * tile_size;
+                        let y: f32 = row as f32 * tile_size;
+                        let color: egui::Color32 = match Tile::from(*val) {
+                            Tile::Wall           => egui::Color32::BLACK,
+                            Tile::Floor          => egui::Color32::WHITE,
+                            Tile::Water          => egui::Color32::from_rgb(26, 111, 204),
+                            Tile::Hole           => egui::Color32::from_rgb(128, 128, 128),
+                            Tile::HealingStation => egui::Color32::from_rgb(34, 170, 34),
+                            Tile::Shrine         => egui::Color32::from_rgb(192, 192, 192),
+                            Tile::Chest          => egui::Color32::from_rgb(139, 69, 19),
+                            Tile::LootPile       => egui::Color32::from_rgb(255, 215, 0),
+                            Tile::Trap           => egui::Color32::from_rgb(204, 0, 0),
+                            Tile::BossSpawner    => egui::Color32::from_rgb(255, 140, 0),
+                            Tile::MonsterSpawner => egui::Color32::from_rgb(255, 102, 0),
+                            _                    => egui::Color32::BLACK,
+                        };
+                        let rect = egui::Rect::from_min_size(
+                            egui::pos2(x, y),
+                            egui::vec2(tile_size, tile_size),
+                        );
+                        painter.rect_filled(rect, 0.0, color);
+                    }
+                    let hovered_tile = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
+                        let col = (pos.x / tile_size) as usize;
+                        let row = (pos.y / tile_size) as usize;
+                        if pos.y < rows as f32 * tile_size && row < rows && col < cols {
+                            Some((row, col))
+                        } else {
+                            None
+                        }
+                    });
+                    let text = match hovered_tile {
+                        Some((row, col)) => {
+                            let val = tilemap[[row, col]];
+                            let room_row = row / 17;
+                            let room_col = col / 17;
+                            format!("Tile ({}, {}) - Value: {}\nTile Type: {:?} - Theme: {:?}\nRoom Position: ({}, {})",
+                                row, col,
+                                val,
+                                Tile::from(val),
+                                Theme::from(theme_map[[row, col]]),
+                                room_row, room_col,
+                            )
+                        }
+                        None => String::new(),
+                    };
+                    painter.text(
+                        egui::pos2(4.0, rows as f32 * tile_size + 2.0),
+                        egui::Align2::LEFT_TOP,
+                        text,
+                        egui::FontId::monospace(18.0),
+                        egui::Color32::WHITE,
+                    );
                 });
         }
     );
