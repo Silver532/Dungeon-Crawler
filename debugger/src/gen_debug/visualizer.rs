@@ -39,7 +39,7 @@ pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                             3 => egui::Color32::BLUE,
                             4 => egui::Color32::RED,
                             5 => egui::Color32::YELLOW,
-                            _ => egui::Color32::from_rgb(255, 0, 255),
+                            _ => egui::Color32::PURPLE,
                         };
                         let rect = egui::Rect::from_min_size(
                             egui::pos2(x, y),
@@ -118,7 +118,7 @@ pub fn show_stage_2(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                             3 => egui::Color32::BLUE,
                             4 => egui::Color32::RED,
                             5 => egui::Color32::YELLOW,
-                            _ => egui::Color32::from_rgb(255, 0, 255),
+                            _ => egui::Color32::PURPLE,
                         };
                         let rect = egui::Rect::from_min_size(
                             egui::pos2(x, y),
