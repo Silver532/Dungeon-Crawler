@@ -7,7 +7,7 @@ use generator::{run_stage_1};
 
 pub fn show_stage_1(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<Vec<(u64, super::Stages)>>>) {
     let layout: Array2<u8> = run_stage_1(seed);
-    let viewport_id = egui::ViewportId::from_hash_of(seed);
+    let viewport_id = egui::ViewportId::from_hash_of((seed, "stage1"));
     let tile_size = 48.0;
     let text_height = 48.0;
     let rows = layout.nrows();
