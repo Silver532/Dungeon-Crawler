@@ -144,9 +144,14 @@ pub fn show(
                         s
                     },
                     _ => {
-                        let s = generate_seed(Some(seed_string));
-                        generator.recent_seeds.push_front(seed_string.to_string());
-                        s
+                        if let Ok(n) = seed_string.parse::<u64>() {
+                            generator.recent_seeds.push_front(seed_string.to_string());
+                            n
+                        } else {
+                            let s = generate_seed(Some(seed_string));
+                            generator.recent_seeds.push_front(seed_string.to_string());
+                            s
+                        }
                     },
                 };
                 if generator.time_check {
