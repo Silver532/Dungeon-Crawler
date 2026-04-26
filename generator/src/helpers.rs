@@ -76,7 +76,7 @@ pub mod s1 {
 
 pub mod enums {
     #[repr(u8)]
-    #[derive(Clone, Copy, PartialEq)]
+    #[derive(Clone, Copy, PartialEq, Debug)]
     pub enum Shape {
         Null = 0,
         Entrance,
@@ -111,7 +111,7 @@ pub mod enums {
     }
 
     #[repr(u8)]
-    #[derive(Clone, Copy, PartialEq)]
+    #[derive(Clone, Copy, PartialEq, Debug)]
     pub enum Theme {
         NULL = 0,
         EMPTY,
@@ -178,6 +178,69 @@ pub mod enums {
         LcBASIC,
         LcFLOODED,
     }
+
+impl From<u8> for Theme {
+    fn from(val: u8) -> Self {
+        match val {
+            0  => Theme::NULL,
+            1  => Theme::EMPTY,
+            2  => Theme::ENTRANCE,
+            3  => Theme::DeTRAPPED,
+            4  => Theme::DeTREASURE,
+            5  => Theme::DeHEALTHY,
+            6  => Theme::DeGUARDED,
+            7  => Theme::BrHOARD,
+            8  => Theme::BrWIZARD,
+            9  => Theme::BrWEAK,
+            10 => Theme::BrSTRONG,
+            11 => Theme::BrGUARDED,
+            12 => Theme::BrDOUBLE,
+            13 => Theme::SrTRAPPED,
+            14 => Theme::SrTREASURE,
+            15 => Theme::SrGUARDED,
+            16 => Theme::SrCHAOS,
+            17 => Theme::SrBASIC,
+            18 => Theme::SrFLOODED,
+            19 => Theme::CnTRAPPED,
+            20 => Theme::CnGUARDED,
+            21 => Theme::CnBASIC,
+            22 => Theme::CnFLOODED,
+            23 => Theme::LrTRAPPED,
+            24 => Theme::LrTREASURE,
+            25 => Theme::LrHEALTHY,
+            26 => Theme::LrGUARDED,
+            27 => Theme::LrCHAOS,
+            28 => Theme::LrBASIC,
+            29 => Theme::LrFLOODED,
+            30 => Theme::CrTRAPPED,
+            31 => Theme::CrTREASURE,
+            32 => Theme::CrGUARDED,
+            33 => Theme::CrCHAOS,
+            34 => Theme::CrBASIC,
+            35 => Theme::CrFLOODED,
+            36 => Theme::HrTRAPPED,
+            37 => Theme::HrTREASURE,
+            38 => Theme::HrGUARDED,
+            39 => Theme::HrCHAOS,
+            40 => Theme::HrBASIC,
+            41 => Theme::HrFLOODED,
+            42 => Theme::ScTRAPPED,
+            43 => Theme::ScTREASURE,
+            44 => Theme::ScGUARDED,
+            45 => Theme::ScCHAOS,
+            46 => Theme::ScBASIC,
+            47 => Theme::ScFLOODED,
+            48 => Theme::LcTRAPPED,
+            49 => Theme::LcTREASURE,
+            50 => Theme::LcHEALTHY,
+            51 => Theme::LcGUARDED,
+            52 => Theme::LcCHAOS,
+            53 => Theme::LcBASIC,
+            54 => Theme::LcFLOODED,
+            _  => Theme::NULL,
+        }
+    }
+}
 
     #[repr(u8)]
     #[derive(Clone, Copy, PartialEq)]
