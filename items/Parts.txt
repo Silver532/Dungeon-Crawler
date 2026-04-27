@@ -1,0 +1,290 @@
+PartType
+    TOP
+    MID
+    END
+    SPECIAL
+
+Stat
+    MELEE_DAMAGE
+    RANGED_DAMAGE
+    MAGIC_DAMAGE
+    ATTACK_SPEED
+    CHARGE_TIME
+    MAX_MANA
+    MANA_COST
+    MANA_RECHARGE
+    ATTACK_RANGE
+    CRIT_CHANCE
+    CRIT_DAMAGE
+    WEIGHT
+    KNOCKBACK
+    KB_RESIST
+    DEFENCE
+    STUN_CHANCE
+    BOUNCES
+    PIERCES
+    PROJECTILES
+    STATUS_DAMAGE
+    STATUS_CHANCE
+    AREA_OF_EFFECT
+    HOMING
+    TITAN_KILLER
+    VORPAL
+    KRONOS
+    THIRSTING
+    VAMP
+
+AttackType
+    SLASH
+    STAB
+    CHOP
+    CRUSH
+    SWING
+    RAKE
+
+    PROJECTILE
+    THROWN
+
+    BEAM
+    BURST
+    SPELLCAST
+    CHANNEL
+
+    SPIN
+    CHARGE
+    WHIP
+
+TopPart
+    LongBlade
+    ShortBlade
+    KnifeBlade
+    AxeHead
+    SpearHead
+    TopBowLimb
+    Orb
+    StaffHead
+    HammerHead
+    MaceHead
+    Crystal
+    Claw
+    Page
+
+MidPart
+    StraightGuard
+    CurvedGuard
+    NoGuard
+    ChainLink
+    Rope
+    WrappedGrip
+    PoleGrip
+    RodGrip
+    BowGrip
+    Gauntlet
+    Tome
+
+EndPart
+    Pommel
+    RuneCap
+    ButtSpike
+    CounterWeight
+    AnchorWeight
+    EndBowLimb
+    LongPole
+    Hook
+    LongBackBlade
+    ShortBackBlade
+    KnifeBackBlade
+    Page
+
+SpecialPart
+    Gemstone
+    RuneCarvings
+    GoldInlay
+
+class PartRegistry:
+    compatibility = {
+        MidPart.StraightGuard : {
+            PartType.TOP: [
+                TopPart.LongBlade,
+                TopPart.ShortBlade,
+                TopPart.KnifeBlade,
+                TopPart.SpearHead,
+                TopPart.MaceHead,
+            ],
+            PartType.END: [
+                EndPart.Pommel,
+                EndPart.RuneCap,
+                EndPart.ButtSpike,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.LongBackBlade,
+                EndPart.ShortBackBlade,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.CurvedGuard: {
+            PartType.TOP: [
+                TopPart.LongBlade,
+                TopPart.ShortBlade,
+                TopPart.KnifeBlade,
+                TopPart.SpearHead,
+                TopPart.MaceHead,
+            ],
+            PartType.END: [
+                EndPart.Pommel,
+                EndPart.RuneCap,
+                EndPart.ButtSpike,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.LongBackBlade,
+                EndPart.ShortBackBlade,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.NoGuard: {
+            PartType.TOP: [
+                TopPart.LongBlade,
+                TopPart.ShortBlade,
+                TopPart.KnifeBlade,
+                TopPart.SpearHead,
+                TopPart.StaffHead,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.Pommel,
+                EndPart.RuneCap,
+                EndPart.ButtSpike,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.LongBackBlade,
+                EndPart.ShortBackBlade,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.ChainLink: {
+            PartType.TOP: [
+                TopPart.KnifeBlade,
+                TopPart.AxeHead,
+                TopPart.SpearHead,
+                TopPart.Orb,
+                TopPart.StaffHead,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.CounterWeight,
+                EndPart.AnchorWeight,
+                EndPart.LongPole,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.Rope: {
+            PartType.TOP: [
+                TopPart.KnifeBlade,
+                TopPart.AxeHead,
+                TopPart.SpearHead,
+                TopPart.Orb,
+                TopPart.StaffHead,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.CounterWeight,
+                EndPart.AnchorWeight,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.WrappedGrip: {
+            PartType.TOP: [
+                TopPart.LongBlade,
+                TopPart.ShortBlade,
+                TopPart.KnifeBlade,
+                TopPart.AxeHead,
+                TopPart.SpearHead,
+                TopPart.Orb,
+                TopPart.StaffHead,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.Pommel,
+                EndPart.RuneCap,
+                EndPart.ButtSpike,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.LongBackBlade,
+                EndPart.ShortBackBlade,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.PoleGrip: {
+            PartType.TOP: [
+                TopPart.ShortBlade,
+                TopPart.KnifeBlade,
+                TopPart.AxeHead,
+                TopPart.SpearHead,
+                TopPart.Orb,
+                TopPart.StaffHead,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.RuneCap,
+                EndPart.ButtSpike,
+                EndPart.AnchorWeight,
+                EndPart.LongPole,
+                EndPart.Hook,
+                EndPart.LongBackBlade,
+                EndPart.ShortBackBlade,
+                EndPart.KnifeBackBlade,
+            ]
+        },
+        MidPart.RodGrip: {
+            PartType.TOP: [
+                TopPart.KnifeBlade,
+                TopPart.HammerHead,
+                TopPart.MaceHead,
+                TopPart.Crystal,
+            ],
+            PartType.END: [
+                EndPart.Pommel,
+                EndPart.RuneCap,
+                EndPart.AnchorWeight,
+                EndPart.Hook,
+            ]
+        },
+        MidPart.BowGrip: {
+            PartType.TOP: [
+                TopPart.TopBowLimb,
+            ],
+            PartType.END: [
+                EndPart.EndBowLimb,
+            ]
+        },
+        MidPart.Gauntlet: {
+            PartType.TOP: [
+                TopPart.Claw
+            ],
+            PartType.END: [
+                EndPart.ButtSpike,
+                EndPart.Hook,
+                EndPart.RuneCap,
+            ]
+        },
+        MidPart.Tome: {
+            PartType.TOP: [
+                TopPart.Page
+            ],
+            PartType.END: [
+                EndPart.Page
+            ]
+        },
+    }
