@@ -212,37 +212,6 @@ pub fn show_stage_3(ctx: &egui::Context, seed: u64, active_viewports: Arc<Mutex<
                         );
                         painter.rect_filled(rect, 0.0, color);
                     }
-                    let hovered_tile = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
-                        let col = (pos.x / tile_size) as usize;
-                        let row = (pos.y / tile_size) as usize;
-                        if pos.y < rows as f32 * tile_size && row < rows && col < cols {
-                            Some((row, col))
-                        } else {
-                            None
-                        }
-                    });
-                    let text = match hovered_tile {
-                        Some((row, col)) => {
-                            let val = tilemap[[row, col]];
-                            let room_row = row / 17;
-                            let room_col = col / 17;
-                            format!("Tile ({}, {}) - Value: {}\nTile Type: {:?} - Theme: {:?}\nRoom Position: ({}, {})",
-                                row, col,
-                                val,
-                                Tile::from(val),
-                                Theme::from(theme_map[[row, col]]),
-                                room_row, room_col,
-                            )
-                        }
-                        None => String::new(),
-                    };
-                    painter.text(
-                        egui::pos2(4.0, rows as f32 * tile_size + 2.0),
-                        egui::Align2::LEFT_TOP,
-                        text,
-                        egui::FontId::monospace(18.0),
-                        egui::Color32::WHITE,
-                    );
                 });
         }
     );
