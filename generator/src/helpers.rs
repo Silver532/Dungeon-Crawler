@@ -1,8 +1,6 @@
 use rand::{SeedableRng, rngs::StdRng};
 use rand::distr::{Distribution, weighted::WeightedIndex};
 
-use crate::helpers::enums::Tile;
-
 pub fn init_rng(input: u64) -> StdRng {
     StdRng::seed_from_u64(input)
 }
@@ -74,6 +72,15 @@ pub mod s1 {
         &[1, 2, 3],   // 1110 ESW
         &[0, 1, 2, 3],// 1111 NESW
     ];
+}
+
+pub mod constants {
+    pub const ROOM_SIZE: usize = 17;
+    pub const HALF: usize = ROOM_SIZE/2;
+    pub const NORTH: u8 = 0b00001;
+    pub const EAST:  u8 = 0b00010;
+    pub const SOUTH: u8 = 0b00100;
+    pub const WEST:  u8 = 0b01000;
 }
 
 pub mod enums {
@@ -181,68 +188,68 @@ pub mod enums {
         LcFLOODED,
     }
 
-impl From<u8> for Theme {
-    fn from(val: u8) -> Self {
-        match val {
-            0  => Theme::NULL,
-            1  => Theme::EMPTY,
-            2  => Theme::ENTRANCE,
-            3  => Theme::DeTRAPPED,
-            4  => Theme::DeTREASURE,
-            5  => Theme::DeHEALTHY,
-            6  => Theme::DeGUARDED,
-            7  => Theme::BrHOARD,
-            8  => Theme::BrWIZARD,
-            9  => Theme::BrWEAK,
-            10 => Theme::BrSTRONG,
-            11 => Theme::BrGUARDED,
-            12 => Theme::BrDOUBLE,
-            13 => Theme::SrTRAPPED,
-            14 => Theme::SrTREASURE,
-            15 => Theme::SrGUARDED,
-            16 => Theme::SrCHAOS,
-            17 => Theme::SrBASIC,
-            18 => Theme::SrFLOODED,
-            19 => Theme::CnTRAPPED,
-            20 => Theme::CnGUARDED,
-            21 => Theme::CnBASIC,
-            22 => Theme::CnFLOODED,
-            23 => Theme::LrTRAPPED,
-            24 => Theme::LrTREASURE,
-            25 => Theme::LrHEALTHY,
-            26 => Theme::LrGUARDED,
-            27 => Theme::LrCHAOS,
-            28 => Theme::LrBASIC,
-            29 => Theme::LrFLOODED,
-            30 => Theme::CrTRAPPED,
-            31 => Theme::CrTREASURE,
-            32 => Theme::CrGUARDED,
-            33 => Theme::CrCHAOS,
-            34 => Theme::CrBASIC,
-            35 => Theme::CrFLOODED,
-            36 => Theme::HrTRAPPED,
-            37 => Theme::HrTREASURE,
-            38 => Theme::HrGUARDED,
-            39 => Theme::HrCHAOS,
-            40 => Theme::HrBASIC,
-            41 => Theme::HrFLOODED,
-            42 => Theme::ScTRAPPED,
-            43 => Theme::ScTREASURE,
-            44 => Theme::ScGUARDED,
-            45 => Theme::ScCHAOS,
-            46 => Theme::ScBASIC,
-            47 => Theme::ScFLOODED,
-            48 => Theme::LcTRAPPED,
-            49 => Theme::LcTREASURE,
-            50 => Theme::LcHEALTHY,
-            51 => Theme::LcGUARDED,
-            52 => Theme::LcCHAOS,
-            53 => Theme::LcBASIC,
-            54 => Theme::LcFLOODED,
-            _  => Theme::NULL,
+    impl From<u8> for Theme {
+        fn from(val: u8) -> Self {
+            match val {
+                0  => Theme::NULL,
+                1  => Theme::EMPTY,
+                2  => Theme::ENTRANCE,
+                3  => Theme::DeTRAPPED,
+                4  => Theme::DeTREASURE,
+                5  => Theme::DeHEALTHY,
+                6  => Theme::DeGUARDED,
+                7  => Theme::BrHOARD,
+                8  => Theme::BrWIZARD,
+                9  => Theme::BrWEAK,
+                10 => Theme::BrSTRONG,
+                11 => Theme::BrGUARDED,
+                12 => Theme::BrDOUBLE,
+                13 => Theme::SrTRAPPED,
+                14 => Theme::SrTREASURE,
+                15 => Theme::SrGUARDED,
+                16 => Theme::SrCHAOS,
+                17 => Theme::SrBASIC,
+                18 => Theme::SrFLOODED,
+                19 => Theme::CnTRAPPED,
+                20 => Theme::CnGUARDED,
+                21 => Theme::CnBASIC,
+                22 => Theme::CnFLOODED,
+                23 => Theme::LrTRAPPED,
+                24 => Theme::LrTREASURE,
+                25 => Theme::LrHEALTHY,
+                26 => Theme::LrGUARDED,
+                27 => Theme::LrCHAOS,
+                28 => Theme::LrBASIC,
+                29 => Theme::LrFLOODED,
+                30 => Theme::CrTRAPPED,
+                31 => Theme::CrTREASURE,
+                32 => Theme::CrGUARDED,
+                33 => Theme::CrCHAOS,
+                34 => Theme::CrBASIC,
+                35 => Theme::CrFLOODED,
+                36 => Theme::HrTRAPPED,
+                37 => Theme::HrTREASURE,
+                38 => Theme::HrGUARDED,
+                39 => Theme::HrCHAOS,
+                40 => Theme::HrBASIC,
+                41 => Theme::HrFLOODED,
+                42 => Theme::ScTRAPPED,
+                43 => Theme::ScTREASURE,
+                44 => Theme::ScGUARDED,
+                45 => Theme::ScCHAOS,
+                46 => Theme::ScBASIC,
+                47 => Theme::ScFLOODED,
+                48 => Theme::LcTRAPPED,
+                49 => Theme::LcTREASURE,
+                50 => Theme::LcHEALTHY,
+                51 => Theme::LcGUARDED,
+                52 => Theme::LcCHAOS,
+                53 => Theme::LcBASIC,
+                54 => Theme::LcFLOODED,
+                _  => Theme::NULL,
+            }
         }
     }
-}
 
     #[repr(u8)]
     #[derive(Clone, Copy, PartialEq, Debug)]
@@ -265,33 +272,32 @@ impl From<u8> for Theme {
         PaintBlue = 15,
         PaintGreen = 16,
     }
-}
 
-impl From<u8> for Tile {
-    fn from(val: u8) -> Self {
-        match val {
-            0  => Tile::Wall,
-            1  => Tile::Floor,
-            2  => Tile::Hole,
-            3  => Tile::Water,
-            4  => Tile::WaterPool,
-            5  => Tile::Trap,
-            6  => Tile::HealingStation,
-            7  => Tile::Chest,
-            8  => Tile::LootPile,
-            9  => Tile::LootCluster,
-            10 => Tile::MonsterSpawner,
-            11 => Tile::BossSpawner,
-            12 => Tile::Shrine,
-            13 => Tile::Entrance,
-            14 => Tile::PaintRed,
-            15 => Tile::PaintBlue,
-            16 => Tile::PaintGreen,
-            _  => Tile::Wall,
+    impl From<u8> for Tile {
+        fn from(val: u8) -> Self {
+            match val {
+                0  => Tile::Wall,
+                1  => Tile::Floor,
+                2  => Tile::Hole,
+                3  => Tile::Water,
+                4  => Tile::WaterPool,
+                5  => Tile::Trap,
+                6  => Tile::HealingStation,
+                7  => Tile::Chest,
+                8  => Tile::LootPile,
+                9  => Tile::LootCluster,
+                10 => Tile::MonsterSpawner,
+                11 => Tile::BossSpawner,
+                12 => Tile::Shrine,
+                13 => Tile::Entrance,
+                14 => Tile::PaintRed,
+                15 => Tile::PaintBlue,
+                16 => Tile::PaintGreen,
+                _  => Tile::Wall,
+            }
         }
     }
 }
-
 mod shape_tables {
     use crate::helpers::enums::Shape;
 
