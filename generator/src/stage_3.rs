@@ -91,50 +91,16 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
             }.fill(Tile::Floor as u8);
         }
         Shape::SmallCircle => {
-            const MASK: [u16; 9] = [
-                0b001111100,
-                0b011111110,
-                0b111111111,
-                0b111111111,
-                0b111111111,
-                0b111111111,
-                0b111111111,
-                0b011111110,
-                0b001111100,
-            ];
-            for dy in 0..9 {
-                for dx in 0..9 {
-                    if MASK[dy] & (1 << (8 - dx)) != 0 {
-                        view[[HALF - 4 + dy, HALF - 4 + dx]] = Tile::Floor as u8;
-                    }
-                }
-            }
+            view.slice_mut(s![HALF-4..=HALF+4, HALF-2..=HALF+2]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-3..=HALF+3, HALF-3..=HALF+3]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-2..=HALF+2, HALF-4..=HALF+4]).fill(Tile::Floor as u8);
         }
         Shape::LargeCircle => {
-            const MASK: [u16; 15] = [
-                0b000001111100000,
-                0b000111111111000,
-                0b001111111111100,
-                0b011111111111110,
-                0b011111111111110,
-                0b111111111111111,
-                0b111111111111111,
-                0b111111111111111,
-                0b111111111111111,
-                0b111111111111111,
-                0b011111111111110,
-                0b011111111111110,
-                0b001111111111100,
-                0b000111111111000,
-                0b000001111100000,
-            ];
-            for dy in 0..15 {
-                for dx in 0..15 {
-                    if MASK[dy] & (1 << (14 - dx)) != 0 {
-                        view[[HALF - 7 + dy, HALF - 7 + dx]] = Tile::Floor as u8;
-                    }
-                }
-            }
+            view.slice_mut(s![HALF-7..=HALF+7, HALF-2..=HALF+2]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-6..=HALF+6, HALF-4..=HALF+4]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-5..=HALF+5, HALF-5..=HALF+5]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-4..=HALF+4, HALF-6..=HALF+6]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-3..=HALF+3, HALF-7..=HALF+7]).fill(Tile::Floor as u8);
         }
         Shape::Entrance => {
             view.slice_mut(s![
