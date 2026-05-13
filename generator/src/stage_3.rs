@@ -3,33 +3,33 @@ use rand::{Rng, rngs::StdRng};
 use crate::helpers::{constants::*, enums::{Shape, Tile}};
 
 fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdRng) {
-    let north = val & NORTH;
-    let east = val & EAST;
-    let south = val & SOUTH;
-    let west = val & WEST;
+    let north: bool = (val & NORTH) != 0;
+    let east:  bool = (val & EAST)  != 0;
+    let south: bool = (val & SOUTH) != 0;
+    let west:  bool = (val & WEST)  != 0;
 
-    if north != 0 {
+    if north {
         view.slice_mut(s![
             0..=HALF + 1,
             HALF - 1..=HALF + 1
         ]).fill(Tile::Floor as u8);
     }
 
-    if east != 0 {
+    if east {
         view.slice_mut(s![
             HALF - 1..=HALF + 1,
             HALF - 1..ROOM_SIZE
         ]).fill(Tile::Floor as u8);
     }
 
-    if south != 0 {
+    if south {
         view.slice_mut(s![
             HALF - 1..ROOM_SIZE,
             HALF - 1..=HALF + 1
         ]).fill(Tile::Floor as u8);
     }
 
-    if west != 0 {
+    if west {
         view.slice_mut(s![
             HALF - 1..=HALF + 1,
             0..=HALF + 1
@@ -73,7 +73,7 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
             let lo = 1..=HALF + 1;
             let hi = (HALF - 1) as isize..-1;
 
-            match (north != 0, south != 0, east != 0, west != 0) {
+            match (north, south, east, west) {
                 (true, _, true, _) => view.slice_mut(s![lo.clone(), hi.clone()]),
                 (_, true, true, _) => view.slice_mut(s![hi.clone(), hi.clone()]),
                 (true, _, _, true) => view.slice_mut(s![lo.clone(), lo.clone()]),
@@ -82,7 +82,7 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
             }.fill(Tile::Floor as u8);
         }
         Shape::Half => {
-            match (north != 0, south != 0, east != 0, west != 0) {
+            match (north, south, east, west) {
                 (true, true, true, _) => view.slice_mut(s![1..-1, HALF as isize..-1]),
                 (true, true, _, true) => view.slice_mut(s![1..-1, 0..=HALF]),
                 (true, _, true, true) => view.slice_mut(s![1..=HALF, 0..-1]),
