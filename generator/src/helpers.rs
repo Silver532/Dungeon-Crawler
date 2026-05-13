@@ -298,6 +298,7 @@ pub mod enums {
         }
     }
 }
+
 mod shape_tables {
     use crate::helpers::enums::Shape;
 
@@ -331,12 +332,10 @@ mod theme_tables {
         [Theme::NULL],
         [100]
     );
-
     pub const TABLE_ENTRANCE:     ([Theme; 1], [u8; 1]) = (
         [Theme::ENTRANCE],
         [100]
     );
-
     pub const TABLE_DEAD_END:     ([Theme; 5], [u8; 5]) = (
         [Theme::DeTRAPPED, Theme::DeTREASURE, Theme::DeHEALTHY, Theme::DeGUARDED, Theme::EMPTY],
         [20, 15, 10, 15, 40]
