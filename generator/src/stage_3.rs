@@ -62,7 +62,6 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
                 HALF-3..=HALF+3
             ]).fill(Tile::Floor as u8);
         }
-        Shape::Connection => {}
         Shape::LargeRoom => {
             view.slice_mut(s![
                 HALF-6..=HALF+6,
