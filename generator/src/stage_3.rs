@@ -1,6 +1,6 @@
 use ndarray::{Array2, ArrayViewMut2, Dimension, s};
 use rand::{Rng, rngs::StdRng};
-use crate::helpers::{constants::*, enums::{Shape, Tile}};
+use crate::helpers::{constants::*, enums::{Shape, Theme, Tile}};
 
 fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdRng) {
     let north: bool = (val & NORTH) != 0;
@@ -131,6 +131,18 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
             }
         }
         _ => {}
+    }
+}
+
+fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &Array2<u8>) {
+    for ((row, col), &val) in theme_map.indexed_iter() {
+        let theme: Theme = Theme::from(val);
+        let y0: usize = row * ROOM_SIZE;
+        let x0: usize = col * ROOM_SIZE;
+        let view: ArrayViewMut2<u8> = tilemap.slice_mut(s![
+                y0..y0 + ROOM_SIZE,
+                x0..x0 + ROOM_SIZE
+        ]);
     }
 }
 
