@@ -136,6 +136,35 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
                 }
             }
         }
+        Shape::Entrance => {
+            view.slice_mut(s![
+                HALF - 2..=HALF + 2,
+                HALF - 2..=HALF + 2
+            ]).fill(Tile::Floor as u8);
+            match (north, south, east, west) {
+                (true, _, _, _) => {
+                    view[[HALF+3,HALF]] = Tile::Entrance as u8;
+                    view[[HALF+2,HALF+2]] = Tile::Wall as u8;
+                    view[[HALF+2,HALF-2]] = Tile::Wall as u8;
+                }
+                (_, true, _, _) => {
+                    view[[HALF-3,HALF]] = Tile::Entrance as u8;
+                    view[[HALF-2,HALF+2]] = Tile::Wall as u8;
+                    view[[HALF-2,HALF-2]] = Tile::Wall as u8;
+                }
+                (_, _, true, _) => {
+                    view[[HALF,HALF-3]] = Tile::Entrance as u8;
+                    view[[HALF+2,HALF-2]] = Tile::Wall as u8;
+                    view[[HALF-2,HALF-2]] = Tile::Wall as u8;
+                }
+                (_, _, _, true) => {
+                    view[[HALF,HALF+3]] = Tile::Entrance as u8;
+                    view[[HALF+2,HALF+2]] = Tile::Wall as u8;
+                    view[[HALF-2,HALF+2]] = Tile::Wall as u8;
+                }
+                _ => return
+            }
+        }
         _ => {}
     }
 }
