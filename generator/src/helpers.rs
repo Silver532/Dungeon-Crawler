@@ -75,12 +75,28 @@ pub mod s1 {
 }
 
 pub mod constants {
+    use crate::helpers::enums::Tile;
+
     pub const ROOM_SIZE: usize = 17;
     pub const HALF: usize = ROOM_SIZE/2;
     pub const NORTH: u8 = 0b00001;
     pub const EAST:  u8 = 0b00010;
     pub const SOUTH: u8 = 0b00100;
     pub const WEST:  u8 = 0b01000;
+    pub const FEATURE_ORDER: [Tile; 12] = [
+        Tile::Entrance,
+        Tile::Water,
+        Tile::WaterPool,
+        Tile::Hole,
+        Tile::HealingStation,
+        Tile::Shrine,
+        Tile::Chest,
+        Tile::LootPile,
+        Tile::LootCluster,
+        Tile::Trap,
+        Tile::BossSpawner,
+        Tile::MonsterSpawner
+    ];
 }
 
 pub mod enums {
