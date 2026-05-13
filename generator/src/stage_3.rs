@@ -153,7 +153,24 @@ pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>
             build_room(slice, val, shape, rng);
         }
     }
-    //Build Cache
+
+    for ((row, col), _) in tilemap.indexed_iter() {
+        let mut mask: u16 = 0;
+        if row > 0 {
+            mask |= 1 << tilemap[[row - 1, col]]
+        }
+        if row < height - 1 {
+            mask |= 1 << tilemap[[row + 1, col]]
+        }
+        if col > 0 {
+            mask |= 1 << tilemap[[row, col - 1]]
+        }
+        if col < width - 1 {
+            mask |= 1 << tilemap[[row, col + 1]]
+        }
+        cache[[row, col]] = mask;
+    }
+
     //Place Features
 
     tilemap
