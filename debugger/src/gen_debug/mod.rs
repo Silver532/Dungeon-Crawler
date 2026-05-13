@@ -1,16 +1,18 @@
 mod visualizer;
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
+use std::time::Instant;
 use eframe::egui::mutex::Mutex;
 use fnv::FnvHasher;
+use ndarray::Array2;
 
 use eframe::egui;
-use generator::{run_stage_1, run_stage_2};
+use generator::{run_stage_1, run_stage_2, run_stage_3};
 use crate::AppState;
 
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Stages {
     Stage1,
     Stage2,
@@ -27,6 +29,21 @@ impl std::fmt::Display for Stages {
     }
 }
 
+pub enum CachedStage {
+    Stage1 {
+        layout: Array2<u8>,
+    },
+    Stage2 {
+        layout: Array2<u8>,
+        shape_map: Array2<u8>,
+        theme_map: Array2<u8>,
+    },
+    Stage3 {
+        tilemap: Array2<u8>,
+        theme_map: Array2<u8>,
+    },
+}
+
 pub struct GeneratorState {
     pub seed_string: String,
     pub time_check: bool,
@@ -34,6 +51,8 @@ pub struct GeneratorState {
     pub selected_stage: Stages,
     pub recent_seeds: VecDeque<String>,
     pub active_viewports: Arc<Mutex<Vec<(u64, Stages)>>>,
+    
+    pub cache: HashMap<(u64, Stages), CachedStage>,
 }
 
 impl Default for GeneratorState {
@@ -45,6 +64,7 @@ impl Default for GeneratorState {
             recent_seeds: VecDeque::new(),
             selected_stage: Stages::Stage1,
             active_viewports: Arc::new(Mutex::new(Vec::new())),
+            cache: HashMap::new(),
         }
     }
 }
@@ -52,38 +72,49 @@ impl Default for GeneratorState {
 fn generate_seed(input: Option<&str>) -> u64 {
     match input {
         Some(s) => {
-            let mut hasher: FnvHasher = FnvHasher::default();
+            let mut hasher = FnvHasher::default();
             s.hash(&mut hasher);
             hasher.finish()
         }
-        None => rand::random::<u64>()
+        None => rand::random::<u64>(),
+    }
+}
+
+fn run_and_cache(stage: &Stages, seed: u64) -> CachedStage {
+    match stage {
+        Stages::Stage1 => CachedStage::Stage1 {
+            layout: run_stage_1(seed),
+        },
+        Stages::Stage2 => {
+            let ((shape_map, theme_map), layout) = run_stage_2(seed);
+            CachedStage::Stage2 { layout, shape_map, theme_map }
+        }
+        Stages::Stage3 => {
+            let (tilemap, theme_map) = run_stage_3(seed);
+            CachedStage::Stage3 { tilemap, theme_map }
+        }
     }
 }
 
 fn time_test(stage: &Stages, count: u16) {
-    match stage {
-        Stages::Stage1 => {
-            for _ in 0..count {
-                let seed: u64 = rand::random::<u64>();
-                _ = run_stage_1(seed)
-                //Do something with time testing here
-            }
-        },
-        Stages::Stage2 => {
-            for _ in 0..count {
-                let seed: u64 = rand::random::<u64>();
-                _ = run_stage_2(seed)
-                //Do something with time testing here
-            }
-        },
-        Stages::Stage3 => {
-            for _ in 0..count {
-                //let seed = rand::random::<u64>();
-                //_ = run_stage_3(seed)
-                //Do something with time testing here
-            }
-        },
+    let start = Instant::now();
+    for _ in 0..count {
+        let seed: u64 = rand::random();
+        match stage {
+            Stages::Stage1 => { run_stage_1(seed); }
+            Stages::Stage2 => { run_stage_2(seed); }
+            Stages::Stage3 => { run_stage_3(seed); }
+        }
     }
+    let elapsed = start.elapsed();
+    let per_run_ms = elapsed.as_secs_f64() * 1000.0 / count as f64;
+    println!(
+        "[Time Test] {} — {} runs — total: {:.2}ms — avg: {:.3}ms/run",
+        stage,
+        count,
+        elapsed.as_secs_f64() * 1000.0,
+        per_run_ms,
+    );
 }
 
 pub fn show(
@@ -120,7 +151,7 @@ pub fn show(
                     ui.selectable_value(&mut generator.selected_stage, Stages::Stage2, "Stage 2");
                     ui.selectable_value(&mut generator.selected_stage, Stages::Stage3, "Stage 3");
                 });
-            
+
             egui::ComboBox::from_id_salt("Test Count")
                 .selected_text(format!("Test Count: {}", generator.test_count))
                 .show_ui(ui, |ui| {
@@ -132,47 +163,60 @@ pub fn show(
 
         ui.horizontal(|ui| {
             if ui.button("Run").clicked() {
-                let len = generator.recent_seeds.len();
-                if len >= 10 {
+                if generator.recent_seeds.len() >= 10 {
                     generator.recent_seeds.pop_back();
                 }
-                let seed_string = generator.seed_string.trim();
-                let seed_num = match seed_string {
+
+                let seed_str = generator.seed_string.trim().to_string();
+                let seed_num = match seed_str.as_str() {
                     "Seed" | "" => {
                         let s = generate_seed(None);
                         generator.recent_seeds.push_front(s.to_string());
                         s
-                    },
+                    }
                     _ => {
-                        if let Ok(n) = seed_string.parse::<u64>() {
-                            generator.recent_seeds.push_front(seed_string.to_string());
+                        if let Ok(n) = seed_str.parse::<u64>() {
+                            generator.recent_seeds.push_front(seed_str.clone());
                             n
                         } else {
-                            let s = generate_seed(Some(seed_string));
-                            generator.recent_seeds.push_front(seed_string.to_string());
+                            let s = generate_seed(Some(&seed_str));
+                            generator.recent_seeds.push_front(seed_str.clone());
                             s
                         }
-                    },
+                    }
                 };
+
                 if generator.time_check {
                     time_test(&generator.selected_stage, generator.test_count);
                 } else {
-                    generator.active_viewports.lock().push((seed_num, generator.selected_stage));
+                    let key = (seed_num, generator.selected_stage);
+                    generator.cache.entry(key).or_insert_with(|| {
+                        run_and_cache(&generator.selected_stage, seed_num)
+                    });
+                    let mut viewports = generator.active_viewports.lock();
+                    if !viewports.contains(&key) {
+                        viewports.push(key);
+                    }
                 }
             }
         });
     });
+
     ui.vertical(|ui| {
         for seed in &generator.recent_seeds {
             ui.label(seed);
         }
     });
+
     let ctx = ui.ctx().clone();
-    for (seed, stage) in generator.active_viewports.lock().iter() {
-        match stage {
-            Stages::Stage1 => visualizer::show_stage_1(&ctx, *seed, Arc::clone(&generator.active_viewports)),
-            Stages::Stage2 => visualizer::show_stage_2(&ctx, *seed, Arc::clone(&generator.active_viewports)),
-            Stages::Stage3 => visualizer::show_stage_3(&ctx, *seed, Arc::clone(&generator.active_viewports)),
+    let active: Vec<(u64, Stages)> = generator.active_viewports.lock().clone();
+    for (seed, stage) in active {
+        if let Some(data) = generator.cache.get(&(seed, stage)) {
+            match stage {
+                Stages::Stage1 => visualizer::show_stage_1(&ctx, seed, Arc::clone(&generator.active_viewports), data),
+                Stages::Stage2 => visualizer::show_stage_2(&ctx, seed, Arc::clone(&generator.active_viewports), data),
+                Stages::Stage3 => visualizer::show_stage_3(&ctx, seed, Arc::clone(&generator.active_viewports), data),
+            }
         }
     }
 }
