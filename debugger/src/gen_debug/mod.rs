@@ -1,9 +1,9 @@
 mod visualizer;
+pub mod gen_timing;
 
 use std::collections::{HashMap, VecDeque};
 use std::hash::{Hash, Hasher};
 use std::sync::Arc;
-use std::time::Instant;
 use eframe::egui::mutex::Mutex;
 use fnv::FnvHasher;
 use ndarray::Array2;
@@ -11,6 +11,7 @@ use ndarray::Array2;
 use eframe::egui;
 use generator::{run_stage_1, run_stage_2, run_stage_3};
 use crate::AppState;
+use crate::gen_debug::gen_timing::write_report;
 
 #[derive(PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Stages {
@@ -97,7 +98,6 @@ fn run_and_cache(stage: &Stages, seed: u64) -> CachedStage {
 }
 
 fn time_test(stage: &Stages, count: u16) {
-    let start: Instant = Instant::now();
     for _ in 0..count {
         let seed: u64 = rand::random();
         match stage {
@@ -106,15 +106,7 @@ fn time_test(stage: &Stages, count: u16) {
             Stages::Stage3 => {run_stage_3(seed);}
         }
     }
-    let elapsed: std::time::Duration = start.elapsed();
-    let per_run_ms: f64 = elapsed.as_secs_f64() * 1000.0 / count as f64;
-    println!(
-        "[Time Test] {} — {} runs — total: {:.2}ms — avg: {:.3}ms/run",
-        stage,
-        count,
-        elapsed.as_secs_f64() * 1000.0,
-        per_run_ms,
-    );
+    write_report(count);
 }
 
 pub fn show(

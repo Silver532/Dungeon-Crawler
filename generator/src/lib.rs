@@ -8,6 +8,8 @@ pub mod helpers;
 #[cfg(feature = "timing")]
 pub mod timing;
 
+pub use timing_macro::timeit;
+
 pub fn run_stage_1(seed: u64) -> Array2<u8> {
     let mut rng = helpers::init_rng(seed);
     stage_1::generate_layout(&mut rng)
