@@ -1,5 +1,6 @@
 [workspace]
-members = ["debugger",
-    "generator"
-, "items"]
+members = [
+    "debugger",
+    "generator",
+    "items",]
 resolver = "3"
