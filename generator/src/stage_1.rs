@@ -2,9 +2,11 @@ use std::{collections::{HashSet, VecDeque}, usize};
 
 use rand::{Rng, rngs::StdRng, seq::SliceRandom};
 use ndarray::{Array2, ArrayView2, s as slice};
+use timing_macro::timeit;
 
 use crate::helpers::s1;
 
+#[timeit("Stage 1")]
 fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     debug_assert!(s1::MAX_BOX_DIM >= 12, "MAX_BOX_DIM too small for box generation ranges");
     for _ in 0..s1::BOX_COUNT {
@@ -21,6 +23,7 @@ fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+#[timeit("Stage 1")]
 fn count_neighbors(snapshot: &Array2<u8>, row: usize, col: usize) -> u8 {
     let mut count: u8 = 0;
     for y in -1..=1 {
@@ -37,6 +40,7 @@ fn count_neighbors(snapshot: &Array2<u8>, row: usize, col: usize) -> u8 {
     count.saturating_sub(1)
 }
 
+#[timeit("Stage 1")]
 fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     for _ in 0..s1::ERODE_COUNT {
         let snapshot: Array2<u8> = tilemap.clone();
@@ -59,6 +63,7 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+#[timeit("Stage 1")]
 fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
     let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
     let north: ArrayView2<u8>  = tiles.slice(slice![..-2, 1..-1]);
@@ -75,6 +80,7 @@ fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
     return connections
 }
 
+#[timeit("Stage 1")]
 fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     let connection_map: Array2<u8> = get_possible_connections(tilemap);
 
@@ -120,6 +126,7 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+#[timeit("Stage 1")]
 fn clear_rooms(tilemap: &mut Array2<u8>) {
     let active: HashSet<(usize, usize)> = tilemap.indexed_iter()
         .filter(|(_, v)| **v != 0)
@@ -165,6 +172,7 @@ fn clear_rooms(tilemap: &mut Array2<u8>) {
     }
 }
 
+#[timeit("Stage 1")]
 fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     let one_exit_list: Vec<(usize, usize)> = tilemap.indexed_iter()
         .filter(|(_, v)| v.count_ones() == 2)
@@ -209,6 +217,7 @@ fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     }
 }
 
+#[timeit("Stage 1")]
 fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
     let mut min_row: usize = usize::MAX;
     let mut max_row: usize = 0;
@@ -225,6 +234,7 @@ fn trim_tilemap(tilemap: Array2<u8>) -> Array2<u8> {
     tilemap.slice(slice![min_row..=max_row, min_col..=max_col]).to_owned()
 }
 
+#[timeit("Stage 1")]
 pub fn generate_layout(rng: &mut StdRng) -> Array2<u8> {
     let mut dungeon_map: Array2<u8> = Array2::zeros((s1::DUNGEON_SIZE, s1::DUNGEON_SIZE));
     place_boxes(&mut dungeon_map, rng);

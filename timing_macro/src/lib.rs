@@ -1,9 +1,10 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, ItemFn};
+use syn::{ItemFn, LitStr, parse_macro_input};
 
 #[proc_macro_attribute]
-pub fn timeit(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn timeit(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let stage: String = parse_macro_input!(attr as LitStr).value();
     let input: ItemFn = parse_macro_input!(item as ItemFn);
     let name: String = input.sig.ident.to_string();
     let vis: &syn::Visibility = &input.vis;
@@ -18,7 +19,7 @@ pub fn timeit(_attr: TokenStream, item: TokenStream) -> TokenStream {
             let __timeit_result__ = (|| #block)();
 
             #[cfg(feature = "timing")]
-            crate::timing::record(#name, __timeit_start__.elapsed());
+            crate::timing::record(#stage, #name, __timeit_start__.elapsed());
 
             __timeit_result__
         }
