@@ -1,10 +1,12 @@
 use ndarray::Array2;
 use rand::Rng;
 use rand::rngs::StdRng;
+use timing_macro::timeit;
 
 use crate::helpers::{get_room_shape, get_room_theme};
 use crate::helpers::enums::Shape;
 
+#[timeit("Stage 2")]
 fn get_entrance_room(exit_map: &Array2<u8>, rng: &mut StdRng) -> (usize, usize) {
     let possibilities: Vec<(usize, usize)> = exit_map.indexed_iter()
         .filter(|(_, v)| v.count_ones() == 2)
@@ -13,6 +15,7 @@ fn get_entrance_room(exit_map: &Array2<u8>, rng: &mut StdRng) -> (usize, usize) 
     possibilities[rng.random_range(0..possibilities.len())]
 }
 
+#[timeit("Stage 2")]
 fn get_shape_map(exit_map: &Array2<u8>, entrance_room: (usize, usize), rng: &mut StdRng) -> Array2<u8> {
     let rows: usize = exit_map.nrows();
     let cols: usize = exit_map.ncols();
@@ -24,6 +27,7 @@ fn get_shape_map(exit_map: &Array2<u8>, entrance_room: (usize, usize), rng: &mut
     shape_map
 }
 
+#[timeit("Stage 2")]
 fn get_theme_map(shape_map: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
     let rows: usize = shape_map.nrows();
     let cols: usize = shape_map.ncols();
@@ -34,6 +38,7 @@ fn get_theme_map(shape_map: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
     theme_map
 }
 
+#[timeit("Stage 2")]
 pub fn plan_rooms(dungeon_map: &Array2<u8>, rng: &mut StdRng) -> (Array2<u8>, Array2<u8>) {
     let entrance_room: (usize, usize) = get_entrance_room(&dungeon_map, rng);
     let shape_map: Array2<u8> = get_shape_map(&dungeon_map, entrance_room, rng);

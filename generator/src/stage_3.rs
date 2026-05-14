@@ -2,8 +2,10 @@ use std::collections::HashMap;
 
 use ndarray::{Array2, ArrayViewMut2, Dimension, s};
 use rand::{Rng, rngs::StdRng, seq::IndexedRandom};
+use timing_macro::timeit;
 use crate::helpers::{constants::*, enums::{Shape, Theme, Tile}, feature_placement::{self, ScanParams}};
 
+#[timeit("Stage 3")]
 fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdRng) {
     let north: bool = (val & NORTH) != 0;
     let east:  bool = (val & EAST)  != 0;
@@ -136,6 +138,7 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
     }
 }
 
+#[timeit("Stage 3")]
 fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0: usize, x0: usize) -> Vec<(usize, usize)> {
     let floor_mask: u16 = 1 << Tile::Floor as u8;
     let place_on = params.place_on.unwrap_or(floor_mask);
@@ -164,6 +167,7 @@ fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0:
     candidates
 }
 
+#[timeit("Stage 3")]
 fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
     let (height, width) = tilemap.dim();
     for ((row, col), &val) in theme_map.indexed_iter() {
@@ -201,6 +205,7 @@ fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &A
     tilemap
 }
 
+#[timeit("Stage 3")]
 pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
     let (height, width) = layout.raw_dim().into_pattern();
     let height_offset: usize = height * ROOM_SIZE;
