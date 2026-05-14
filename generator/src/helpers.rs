@@ -83,8 +83,7 @@ pub mod constants {
     pub const EAST:  u8 = 0b00010;
     pub const SOUTH: u8 = 0b00100;
     pub const WEST:  u8 = 0b01000;
-    pub const FEATURE_ORDER: [Tile; 12] = [
-        Tile::Entrance,
+    pub const FEATURE_ORDER: [Tile; 11] = [
         Tile::Water,
         Tile::WaterPool,
         Tile::Hole,
