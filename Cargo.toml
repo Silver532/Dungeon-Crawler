@@ -2,5 +2,7 @@
 members = [
     "debugger",
     "generator",
-    "items",]
+    "items",
+    "timing_macro"
+]
 resolver = "3"

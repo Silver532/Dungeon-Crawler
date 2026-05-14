@@ -1220,6 +1220,7 @@ dependencies = [
  "fnv",
  "ndarray",
  "rand 0.9.2",
+ "timing_macro",
 ]
 
 [[package]]
@@ -3158,6 +3159,15 @@ dependencies = [
  "quick-error",
  "weezl",
  "zune-jpeg",
+]
+
+[[package]]
+name = "timing_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
