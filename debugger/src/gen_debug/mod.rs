@@ -97,17 +97,17 @@ fn run_and_cache(stage: &Stages, seed: u64) -> CachedStage {
 }
 
 fn time_test(stage: &Stages, count: u16) {
-    let start = Instant::now();
+    let start: Instant = Instant::now();
     for _ in 0..count {
         let seed: u64 = rand::random();
         match stage {
-            Stages::Stage1 => { run_stage_1(seed); }
-            Stages::Stage2 => { run_stage_2(seed); }
-            Stages::Stage3 => { run_stage_3(seed); }
+            Stages::Stage1 => {run_stage_1(seed);}
+            Stages::Stage2 => {run_stage_2(seed);}
+            Stages::Stage3 => {run_stage_3(seed);}
         }
     }
-    let elapsed = start.elapsed();
-    let per_run_ms = elapsed.as_secs_f64() * 1000.0 / count as f64;
+    let elapsed: std::time::Duration = start.elapsed();
+    let per_run_ms: f64 = elapsed.as_secs_f64() * 1000.0 / count as f64;
     println!(
         "[Time Test] {} — {} runs — total: {:.2}ms — avg: {:.3}ms/run",
         stage,
