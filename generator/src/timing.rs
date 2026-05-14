@@ -1,9 +1,9 @@
 use std::cell::RefCell;
-use std::collections::HashMap;
+use indexmap::IndexMap;
 use std::time::Duration;
 
 thread_local! {
-    static TIMINGS: RefCell<HashMap<&'static str, HashMap<&'static str, Vec<Duration>>>> = RefCell::new(HashMap::new());
+    static TIMINGS: RefCell<IndexMap<&'static str, IndexMap<&'static str, Vec<Duration>>>> = RefCell::new(IndexMap::new());
 }
 
 pub fn record(stage: &'static str, name: &'static str, duration: Duration) {
@@ -17,7 +17,7 @@ pub fn record(stage: &'static str, name: &'static str, duration: Duration) {
     });
 }
 
-pub fn take() -> HashMap<&'static str, HashMap<&'static str, Vec<Duration>>> {
+pub fn take() -> IndexMap<&'static str, IndexMap<&'static str, Vec<Duration>>> {
     TIMINGS.with(|t| {
         let mut map = t.borrow_mut();
         std::mem::take(&mut *map)

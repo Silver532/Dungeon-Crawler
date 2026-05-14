@@ -1,29 +1,22 @@
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 
 use generator::timing::take;
+use indexmap::IndexMap;
 
 pub fn write_report(run_count: u16) {
     let timings = take();
     let mut file = File::create("timings.md").expect("failed to create timings.md");
 
-    let mut stages: Vec<(&'static str, HashMap<&'static str, Vec<std::time::Duration>>)> = timings.into_iter().collect();
+    let mut stages: Vec<(&'static str, IndexMap<&'static str, Vec<std::time::Duration>>)> = timings.into_iter().collect();
     stages.sort_by_key(|(name, _)| *name);
 
     for (stage, functions) in stages {
         writeln!(file, "## {}", stage).unwrap();
-        writeln!(file, "| function | total (ms) | calls | calls/run | avg/call (ms) | avg/run (ms) | min (ms) | max (ms) | first (ms) | last (ms) |").unwrap();
-        writeln!(file, "|----------|------------|-------|-----------|---------------|--------------|----------|----------|------------|-----------|").unwrap();
+        writeln!(file, "| function | total (ms) | calls | calls/run | avg/call (ms) | avg/run (ms) | min (ms) | max (ms) | last (ms) | first (ms) |").unwrap();
+        writeln!(file, "|----------|------------|-------|-----------|---------------|--------------|----------|----------|-----------|------------|").unwrap();
 
-        let mut entries: Vec<(&'static str, Vec<std::time::Duration>)> = functions.into_iter().collect();
-        entries.sort_by(|(_, a), (_, b)| {
-            let a_total: std::time::Duration = a.iter().sum();
-            let b_total: std::time::Duration = b.iter().sum();
-            b_total.cmp(&a_total)
-        });
-
-        for (name, durations) in entries {
+        for (name, durations) in functions {
             let total: std::time::Duration = durations.iter().sum();
             let count = durations.len();
             let avg_per_call = total / count as u32;
