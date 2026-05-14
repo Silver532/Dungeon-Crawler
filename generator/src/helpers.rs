@@ -314,6 +314,374 @@ pub mod enums {
     }
 }
 
+pub mod feature_placement {
+    use rand::{Rng, rngs::StdRng};
+
+    use crate::helpers::enums::{Theme, Tile};
+
+    #[derive(Clone, Copy)]
+    enum Value {
+        Single(u8),
+        Range(u8, u8)
+    }
+    impl Value {
+        fn resolve(self, rng: &mut StdRng) -> u8 {
+            match self {
+                Value::Single(x) => x,
+                Value::Range(min, max) => rng.random_range(min..=max),
+            }
+        }
+    }
+
+    type Table = &'static [(Tile, Value)];
+
+    fn table(theme: Theme) -> Table {
+        match theme {
+            Theme::DeTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(3)),
+            ],
+            Theme::DeTreasure => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::DeHealthy => &[(Tile::HealingStation, Value::Single(1))],
+            Theme::DeGuarded => &[(Tile::MonsterSpawner, Value::Single(1))],
+
+            Theme::SrTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Trap, Value::Range(3, 5)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::SrTreasure => &[
+                (Tile::Trap, Value::Range(1, 2)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+            ],
+            Theme::SrGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(2)),
+            ],
+            Theme::SrChaos => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(3)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::SrBasic => &[
+                (Tile::Trap, Value::Range(0, 1)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::SrFlooded => &[
+                (Tile::Water, Value::Single(5)),
+                (Tile::WaterPool, Value::Single(13)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+
+            Theme::CnTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Trap, Value::Range(1, 3)),
+                (Tile::LootPile, Value::Single(1)),
+            ],
+            Theme::CnGuarded => &[(Tile::MonsterSpawner, Value::Single(1))],
+            Theme::CnBasic => &[(Tile::LootPile, Value::Range(0, 1))],
+            Theme::CnFlooded => &[
+                (Tile::Water, Value::Single(4)),
+                (Tile::WaterPool, Value::Single(10)),
+                (Tile::MonsterSpawner, Value::Range(0, 1)),
+            ],
+
+            Theme::LrTrapped => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Range(3, 5)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::LrTreasure => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::LrHealthy => &[(Tile::HealingStation, Value::Single(1))],
+            Theme::LrGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(3)),
+            ],
+            Theme::LrChaos => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Range(2, 4)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::LrBasic => &[
+                (Tile::Trap, Value::Range(1, 2)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::LrFlooded => &[
+                (Tile::Water, Value::Single(6)),
+                (Tile::WaterPool, Value::Single(18)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+
+            Theme::CrTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Trap, Value::Range(2, 4)),
+                (Tile::LootPile, Value::Single(1)),
+            ],
+            Theme::CrTreasure => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::CrGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(2)),
+            ],
+            Theme::CrChaos => &[
+                (Tile::Hole, Value::Range(0, 1)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::Chest, Value::Range(0, 2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Range(2, 3)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::CrBasic => &[
+                (Tile::Trap, Value::Range(0, 1)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::CrFlooded => &[
+                (Tile::Water, Value::Single(4)),
+                (Tile::WaterPool, Value::Single(12)),
+                (Tile::MonsterSpawner, Value::Range(0, 1)),
+            ],
+
+            Theme::HrTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Trap, Value::Range(2, 4)),
+                (Tile::LootPile, Value::Single(1)),
+            ],
+            Theme::HrTreasure => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::HrGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(2)),
+            ],
+            Theme::HrChaos => &[
+                (Tile::Hole, Value::Range(0, 1)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Range(2, 3)),
+                (Tile::Shrine, Value::Single(1)),
+                (Tile::Chest, Value::Range(0, 2)),
+                (Tile::LootPile, Value::Single(3)),
+            ],
+            Theme::HrBasic => &[
+                (Tile::Trap, Value::Range(0, 1)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::HrFlooded => &[
+                (Tile::Water, Value::Single(5)),
+                (Tile::WaterPool, Value::Single(15)),
+                (Tile::MonsterSpawner, Value::Range(0, 1)),
+            ],
+
+            Theme::BrHoard => &[
+                (Tile::Chest, Value::Single(3)),
+                (Tile::LootPile, Value::Single(9)),
+                (Tile::BossSpawner, Value::Single(1)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::BrWizard => &[
+                (Tile::Chest, Value::Single(4)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::BossSpawner, Value::Single(1)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::BrWeak => &[
+                (Tile::Trap, Value::Range(0, 1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+                (Tile::BossSpawner, Value::Single(1)),
+            ],
+            Theme::BrStrong => &[
+                (Tile::HealingStation, Value::Range(0, 1)),
+                (Tile::Chest, Value::Range(1, 3)),
+                (Tile::LootPile, Value::Single(5)),
+                (Tile::BossSpawner, Value::Single(1)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::BrGuarded => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Single(2)),
+                (Tile::BossSpawner, Value::Single(1)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::BrDouble => &[
+                (Tile::Chest, Value::Single(3)),
+                (Tile::LootPile, Value::Single(5)),
+                (Tile::BossSpawner, Value::Single(2)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+
+            Theme::ScTrapped => &[
+                (Tile::Hole, Value::Single(1)),
+                (Tile::Trap, Value::Range(3, 5)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::ScTreasure => &[
+                (Tile::Trap, Value::Range(1, 2)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+            ],
+            Theme::ScGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(2)),
+            ],
+            Theme::ScChaos => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(3)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::ScBasic => &[
+                (Tile::Trap, Value::Range(0, 1)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::ScFlooded => &[
+                (Tile::Water, Value::Single(4)),
+                (Tile::WaterPool, Value::Single(12)),
+                (Tile::MonsterSpawner, Value::Range(0, 1)),
+            ],
+
+            Theme::LcTrapped => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Range(3, 5)),
+                (Tile::LootPile, Value::Single(2)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::LcTreasure => &[
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Single(1)),
+            ],
+            Theme::LcHealthy => &[(Tile::HealingStation, Value::Single(1))],
+            Theme::LcGuarded => &[
+                (Tile::Water, Value::Range(0, 1)),
+                (Tile::Trap, Value::Single(1)),
+                (Tile::Chest, Value::Single(1)),
+                (Tile::LootPile, Value::Single(1)),
+                (Tile::MonsterSpawner, Value::Single(3)),
+            ],
+            Theme::LcChaos => &[
+                (Tile::Hole, Value::Single(2)),
+                (Tile::Water, Value::Single(1)),
+                (Tile::Trap, Value::Single(3)),
+                (Tile::Chest, Value::Single(2)),
+                (Tile::LootPile, Value::Single(3)),
+                (Tile::MonsterSpawner, Value::Range(2, 4)),
+                (Tile::Shrine, Value::Single(1)),
+            ],
+            Theme::LcBasic => &[
+                (Tile::Trap, Value::Range(1, 2)),
+                (Tile::LootPile, Value::Range(0, 1)),
+            ],
+            Theme::LcFlooded => &[
+                (Tile::Water, Value::Single(7)),
+                (Tile::WaterPool, Value::Single(21)),
+                (Tile::MonsterSpawner, Value::Range(1, 2)),
+            ],
+            Theme::Empty | Theme::Null | Theme::Entrance => &[],
+        }
+    }
+
+    pub fn map<'a>(theme: Theme, rng: &'a mut StdRng) -> impl Iterator<Item = (Tile, u8)> + 'a {
+        table(theme)
+            .iter()
+            .map(move |(tile, value)| {
+                (*tile, value.resolve(rng))
+            })
+    }
+
+    pub struct ScanParams {
+        pub require: u16,
+        pub block: u16,
+        pub bias: u16,
+        pub place_on: Option<u16>
+    }
+
+    const NO_PARAMS: ScanParams = ScanParams{require: 0, block: 0, bias: 0, place_on: None};
+
+    pub const SCAN_PARAMS: [ScanParams; 17] = {
+        let mut p = [NO_PARAMS; 17];
+
+        const WALL:           u16 = 1 << 0;
+        const FLOOR:          u16 = 1 << 1;
+        const HOLE:           u16 = 1 << 2;
+        const WATER:          u16 = 1 << 3;
+        const WATER_POOL:     u16 = 1 << 4;
+        const TRAP:           u16 = 1 << 5;
+        const HEALING:        u16 = 1 << 6;
+        const CHEST:          u16 = 1 << 7;
+        const LOOT_PILE:      u16 = 1 << 8;
+        const LOOT_CLUSTER:   u16 = 1 << 9;
+        const MONSTER:        u16 = 1 << 10;
+        const BOSS:           u16 = 1 << 11;
+        const SHRINE:         u16 = 1 << 12;
+
+        p[Tile::Entrance as usize]      = ScanParams { require: FLOOR, block: 0, bias: 0, place_on: Some(WALL) };
+        p[Tile::Water as usize]         = ScanParams { require: 0, block: CHEST | LOOT_PILE | LOOT_CLUSTER | HOLE, bias: 0, place_on: None };
+        p[Tile::WaterPool as usize]     = ScanParams { require: WATER, block: CHEST | LOOT_PILE | LOOT_CLUSTER | HOLE, bias: 0, place_on: None };
+        p[Tile::Hole as usize]          = ScanParams { require: 0, block: WALL | WATER | WATER_POOL | LOOT_PILE | LOOT_CLUSTER, bias: 0, place_on: None };
+        p[Tile::HealingStation as usize]= ScanParams { require: FLOOR, block: 0, bias: 0, place_on: Some(WALL) };
+        p[Tile::Shrine as usize]        = ScanParams { require: FLOOR, block: 0, bias: 0, place_on: Some(WALL) };
+        p[Tile::Chest as usize]         = ScanParams { require: 0, block: 0, bias: LOOT_PILE | LOOT_CLUSTER | WALL, place_on: None };
+        p[Tile::LootPile as usize]      = ScanParams { require: 0, block: WATER | WATER_POOL | HOLE, bias: CHEST, place_on: None };
+        p[Tile::LootCluster as usize]   = ScanParams { require: CHEST | LOOT_PILE | LOOT_CLUSTER, block: WATER | WATER_POOL | HOLE, bias: 0, place_on: None };
+        p[Tile::Trap as usize]          = ScanParams { require: 0, block: TRAP | HEALING | SHRINE, bias: 0, place_on: None };
+        p[Tile::BossSpawner as usize]   = ScanParams { require: 0, block: MONSTER | HEALING | SHRINE, bias: 0, place_on: None };
+        p[Tile::MonsterSpawner as usize]= ScanParams { require: 0, block: BOSS | HEALING | SHRINE, bias: 0, place_on: None };
+        p
+    };
+}
+
 mod shape_tables {
     use crate::helpers::enums::Shape;
 
