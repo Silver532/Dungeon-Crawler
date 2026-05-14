@@ -5,10 +5,13 @@ use generator::timing::take;
 
 pub fn write_report(run_count: u16) {
     let timings = take();
-    let mut file = File::create("timings.txt").expect("failed to create timings.txt");
+    let mut file = File::create("timings.md").expect("failed to create timings.md");
 
     let mut entries: Vec<(&'static str, Vec<std::time::Duration>)> = timings.into_iter().collect();
     entries.sort_by_key(|(name, _)| *name);
+
+    writeln!(file, "| function | total (ms) | calls | calls/run | avg/call (ms) | avg/run (ms) | min (ms) | max (ms) |").unwrap();
+    writeln!(file, "|----------|------------|-------|-----------|---------------|--------------|----------|----------|").unwrap();
 
     for (name, durations) in entries {
         let total: std::time::Duration = durations.iter().sum();
@@ -18,14 +21,15 @@ pub fn write_report(run_count: u16) {
         let min = durations.iter().min().unwrap();
         let max = durations.iter().max().unwrap();
 
-        writeln!(file, "{}", name).unwrap();
-        writeln!(file, "\ttotal:        {:.3}ms", total.as_secs_f64() * 1000.0).unwrap();
-        writeln!(file, "\tcalls:        {}", count).unwrap();
-        writeln!(file, "\tcalls/run:    {:.1}", count as f64 / run_count as f64).unwrap();
-        writeln!(file, "\tavg/call:     {:.3}ms", avg_per_call.as_secs_f64() * 1000.0).unwrap();
-        writeln!(file, "\tavg/run:      {:.3}ms", avg_per_run.as_secs_f64() * 1000.0).unwrap();
-        writeln!(file, "\tmin:          {:.3}ms", min.as_secs_f64() * 1000.0).unwrap();
-        writeln!(file, "\tmax:          {:.3}ms", max.as_secs_f64() * 1000.0).unwrap();
-        writeln!(file, "").unwrap();
+        writeln!(file, "| {} | {:.3} | {} | {:.1} | {:.3} | {:.3} | {:.3} | {:.3} |",
+            name,
+            total.as_secs_f64() * 1000.0,
+            count,
+            count as f64 / run_count as f64,
+            avg_per_call.as_secs_f64() * 1000.0,
+            avg_per_run.as_secs_f64() * 1000.0,
+            min.as_secs_f64() * 1000.0,
+            max.as_secs_f64() * 1000.0,
+        ).unwrap();
     }
 }
