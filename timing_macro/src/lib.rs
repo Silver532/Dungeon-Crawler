@@ -10,7 +10,7 @@ pub fn timeit(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let sig: &syn::Signature = &input.sig;
     let block: &Box<syn::Block> = &input.block;
 
-    let expanded = quote! {
+    let expanded: proc_macro2::TokenStream = quote! {
         #vis #sig {
             #[cfg(feature = "timing")]
             let __timeit_start__ = std::time::Instant::now();
