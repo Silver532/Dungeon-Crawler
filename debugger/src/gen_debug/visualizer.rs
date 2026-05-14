@@ -230,6 +230,7 @@ pub fn show_stage_3(
             Tile::Trap           => egui::Color32::from_rgb(204, 0, 0),
             Tile::BossSpawner    => egui::Color32::from_rgb(255, 140, 0),
             Tile::MonsterSpawner => egui::Color32::from_rgb(255, 102, 0),
+            Tile::Entrance       => egui::Color32::from_rgb(100, 100, 100),
             _                    => egui::Color32::BLACK,
         },
         move |row, col| {
