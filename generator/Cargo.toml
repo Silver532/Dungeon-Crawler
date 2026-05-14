@@ -7,3 +7,6 @@ edition = "2024"
 fnv = "1.0.7"
 rand = "0.9"
 ndarray = "0.17.2"
+
+[features]
+timing = []
