@@ -142,19 +142,26 @@ fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0:
     biased.clear();
     
     let place_on: u16 = params.place_on.unwrap_or(FLOOR_MASK);
+    let tilemap_raw: &[u8] = tilemap.as_slice().unwrap();
+    let cache_raw: &[u16] = cache.as_slice().unwrap();
+    let width: usize = tilemap.ncols();
 
-    for ((r, c), &val) in tilemap.slice(s![y0..y0 + ROOM_SIZE, x0..x0 + ROOM_SIZE]).indexed_iter() {
-        let abs_r = y0 + r;
-        let abs_c = x0 + c;
-        let tile_bit: u16 = 1 << val;
-        if tile_bit & place_on == 0 {continue;}
-        let neighbors: u16 = cache[[abs_r, abs_c]];
-        if params.require != 0 && neighbors & params.require == 0 {continue;}
-        if params.block != 0 && neighbors & params.block != 0 {continue;}
-        if params.bias != 0 && neighbors & params.bias != 0 {
-            biased.push((abs_r, abs_c));
+    for r in 0..ROOM_SIZE {
+        let abs_r: usize = y0 + r;
+        for c in 0..ROOM_SIZE {
+            let abs_c: usize = x0 + c;
+            let idx: usize = abs_r * width + abs_c;
+            let val: u8 = tilemap_raw[idx];
+            let tile_bit: u16 = 1 << val;
+            if tile_bit & place_on == 0 { continue; }
+            let neighbors: u16 = cache_raw[idx];
+            if params.require != 0 && neighbors & params.require == 0 { continue; }
+            if params.block != 0 && neighbors & params.block != 0 { continue; }
+            if params.bias != 0 && neighbors & params.bias != 0 {
+                biased.push((abs_r, abs_c));
+            }
+            candidates.push((abs_r, abs_c));
         }
-        candidates.push((abs_r, abs_c));
     }
 
     if !biased.is_empty() {
