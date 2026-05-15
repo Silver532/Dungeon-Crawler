@@ -24,43 +24,44 @@ fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
 }
 
 #[timeit("Stage 1")]
-fn count_neighbors(snapshot: &Array2<u8>, row: usize, col: usize) -> u8 {
-    let mut count: u8 = 0;
-    for y in -1..=1 {
-        for x in -1..=1 {
-            let row: isize = row as isize + y;
-            let col: isize = col as isize + x;
-            if row < 0 || col < 0
-                || row >= snapshot.nrows() as isize
-                || col >= snapshot.ncols() as isize
-                {continue;}
-            count += if snapshot[[row as usize, col as usize]] != 0 {1} else {0}
-        }
-    }
-    count.saturating_sub(1)
-}
-
-#[timeit("Stage 1")]
 fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
+    let rows: usize = tilemap.nrows();
+    let cols: usize = tilemap.ncols();
+    let mut current: Array2<u8> = tilemap.clone();
+    let mut next: Array2<u8> = tilemap.clone();
+
     for _ in 0..s1::ERODE_COUNT {
-        let snapshot: Array2<u8> = tilemap.clone();
-        for ((row, col), val) in snapshot.indexed_iter() {
-            if *val == 0 {continue;}
-            let neighbors: u8 = count_neighbors(&snapshot, row, col);
-            let erode_chance: u8 = match neighbors {
-                0 => 100,
-                1 => 90,
-                2 | 3 => 35,
-                4 | 5 => 15,
-                6 | 7 => 3,
-                8 => 1,
-                _ => 0,
-            };
-            if rng.random_range(1..=100) <= erode_chance {
-                tilemap[[row, col]] = 0;
+        for row in 1..rows - 1 {
+            for col in 1..cols - 1 {
+                let val: u8 = current[[row, col]];
+                if val == 0 { 
+                    next[[row, col]] = 0;
+                    continue; 
+                }
+                let neighbors: u8 =
+                    (current[[row-1, col-1]] != 0) as u8 +
+                    (current[[row-1, col  ]] != 0) as u8 +
+                    (current[[row-1, col+1]] != 0) as u8 +
+                    (current[[row  , col-1]] != 0) as u8 +
+                    (current[[row  , col+1]] != 0) as u8 +
+                    (current[[row+1, col-1]] != 0) as u8 +
+                    (current[[row+1, col  ]] != 0) as u8 +
+                    (current[[row+1, col+1]] != 0) as u8;
+                let erode_chance: u8 = match neighbors {
+                    0 => 100,
+                    1 => 90,
+                    2 | 3 => 35,
+                    4 | 5 => 15,
+                    6 | 7 => 3,
+                    8 => 1,
+                    _ => 0,
+                };
+                next[[row, col]] = if rng.random_range(1..=100) <= erode_chance { 0 } else { val };
             }
         }
+        std::mem::swap(&mut current, &mut next);
     }
+    *tilemap = current;
 }
 
 #[timeit("Stage 1")]
