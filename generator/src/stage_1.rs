@@ -95,8 +95,8 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         }
 
         let connect_count: u8 = match rng.random::<f32>() {
-            rand if rand >= 0.85 => 3,
-            rand if rand >= 0.50 => 2,
+            prob if prob >= 0.85 => 3,
+            prob if prob >= 0.50 => 2,
             _ => 1
         }.min(available);
 
