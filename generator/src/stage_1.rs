@@ -24,21 +24,29 @@ fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
 }
 
 #[timeit("Stage 1")]
+fn count_neighbors(snapshot: &Array2<u8>, row: usize, col: usize) -> u8 {
+    let mut count: u8 = 0;
+    for y in -1..=1 {
+        for x in -1..=1 {
+            let row: isize = row as isize + y;
+            let col: isize = col as isize + x;
+            if row < 0 || col < 0
+                || row >= snapshot.nrows() as isize
+                || col >= snapshot.ncols() as isize
+                {continue;}
+            count += if snapshot[[row as usize, col as usize]] != 0 {1} else {0}
+        }
+    }
+    count.saturating_sub(1)
+}
+
+#[timeit("Stage 1")]
 fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
-    let mut current: Array2<u8> = tilemap.clone();
-    let mut next: Array2<u8> = tilemap.clone();
     for _ in 0..s1::ERODE_COUNT {
-        for ((row, col), val) in current.indexed_iter() {
+        let snapshot: Array2<u8> = tilemap.clone();
+        for ((row, col), val) in snapshot.indexed_iter() {
             if *val == 0 {continue;}
-            let neighbors: u8 =
-                (current[[row-1, col-1]] != 0) as u8 +
-                (current[[row-1, col  ]] != 0) as u8 +
-                (current[[row-1, col+1]] != 0) as u8 +
-                (current[[row  , col-1]] != 0) as u8 +
-                (current[[row  , col+1]] != 0) as u8 +
-                (current[[row+1, col-1]] != 0) as u8 +
-                (current[[row+1, col  ]] != 0) as u8 +
-                (current[[row+1, col+1]] != 0) as u8;
+            let neighbors: u8 = count_neighbors(&snapshot, row, col);
             let erode_chance: u8 = match neighbors {
                 0 => 100,
                 1 => 90,
@@ -49,17 +57,11 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
                 _ => 0,
             };
             if rng.random_range(1..=100) <= erode_chance {
-                next[[row, col]] = 0;
-            }
-            else {
-                next[[row, col]] = *val;
+                tilemap[[row, col]] = 0;
             }
         }
-        std::mem::swap(&mut current, &mut next);
     }
-    *tilemap = current
 }
-
 #[timeit("Stage 1")]
 fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
     let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
