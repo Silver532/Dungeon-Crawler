@@ -96,6 +96,7 @@ pub mod constants {
         Tile::BossSpawner,
         Tile::MonsterSpawner
     ];
+    pub const FLOOR_MASK: u16 = 1 << Tile::Floor as u8;
 }
 
 pub mod enums {
@@ -632,12 +633,12 @@ pub mod feature_placement {
         }
     }
 
-    pub fn map<'a>(theme: Theme, rng: &'a mut StdRng) -> impl Iterator<Item = (Tile, u8)> + 'a {
-        table(theme)
-            .iter()
-            .map(move |(tile, value)| {
-                (*tile, value.resolve(rng))
-            })
+    pub fn map<'a>(theme: Theme, rng: &'a mut StdRng) -> [u8; 17] {
+        let mut counts: [u8; 17] = [0u8; 17];
+        for (tile, value) in table(theme) {
+            counts[*tile as usize] = value.resolve(rng);
+        }
+        counts
     }
 
     pub struct ScanParams {

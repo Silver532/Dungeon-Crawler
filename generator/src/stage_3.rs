@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use ndarray::{Array2, ArrayViewMut2, Dimension, s};
 use rand::{Rng, rngs::StdRng, seq::IndexedRandom};
 use timing_macro::timeit;
@@ -139,11 +137,11 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
 }
 
 #[timeit("Stage 3")]
-fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0: usize, x0: usize) -> Vec<(usize, usize)> {
-    let floor_mask: u16 = 1 << Tile::Floor as u8;
-    let place_on = params.place_on.unwrap_or(floor_mask);
-    let mut candidates: Vec<(usize, usize)> = Vec::new();
-    let mut biased: Vec<(usize, usize)> = Vec::new();
+fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0: usize, x0: usize, candidates: &mut Vec<(usize, usize)>, biased: &mut Vec<(usize, usize)>) {
+    candidates.clear();
+    biased.clear();
+    
+    let place_on: u16 = params.place_on.unwrap_or(FLOOR_MASK);
 
     for ((r, c), &val) in tilemap.slice(s![y0..y0 + ROOM_SIZE, x0..x0 + ROOM_SIZE]).indexed_iter() {
         let abs_r = y0 + r;
@@ -164,28 +162,32 @@ fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0:
         candidates.extend_from_slice(&biased);
         candidates.extend_from_slice(&biased);
     }
-    candidates
 }
 
 #[timeit("Stage 3")]
 fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
     let (height, width) = tilemap.dim();
+    let mut candidates: Vec<(usize, usize)> = Vec::new();
+    let mut biases: Vec<(usize, usize)> = Vec::new();
     for ((row, col), &val) in theme_map.indexed_iter() {
         let theme: Theme = Theme::from(val);
+        if matches!(theme, Theme::Null | Theme::Empty | Theme::Entrance) {continue;}
+
         let y0: usize = row * ROOM_SIZE;
         let x0: usize = col * ROOM_SIZE;
-        let counts: HashMap<Tile, u8> = feature_placement::map(theme, rng).collect();
+        let counts: [u8; 17] = feature_placement::map(theme, rng);
 
         for feature in FEATURE_ORDER {
-            let count: u8 = counts.get(&feature).copied().unwrap_or(0);
+            let count: u8 = counts[feature as usize];
             if count == 0 {continue;}
 
             let params: &ScanParams = &feature_placement::SCAN_PARAMS[feature as usize];
-            let candidates: Vec<(usize, usize)> = scan_room(&tilemap, &cache, params, y0, x0);
+
+            scan_room(&tilemap, &cache, params, y0, x0, &mut candidates, &mut biases);
             if candidates.is_empty() {continue;}
 
-            let count: usize = count.min(candidates.len() as u8) as usize;
-            let chosen = candidates.choose_multiple(rng, count);
+            let quota: usize = count.min(candidates.len() as u8) as usize;
+            let chosen = candidates.choose_multiple(rng, quota);
             for &(r, c) in chosen {
                 let tile_val: u8 = match feature {
                     Tile::WaterPool => Tile::Water as u8,
@@ -199,6 +201,7 @@ fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &A
                 if r < height - 1  {cache[[r + 1, c]] |= bit;}
                 if c > 0           {cache[[r, c - 1]] |= bit;}
                 if c < width - 1   {cache[[r, c + 1]] |= bit;}
+                cache[[r, c]] |= bit;
             }
         }
     }
@@ -231,13 +234,13 @@ pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>
         if row > 0 {
             mask |= 1 << tilemap[[row - 1, col]]
         }
-        if row < height - 1 {
+        if row < height_offset - 1 {
             mask |= 1 << tilemap[[row + 1, col]]
         }
         if col > 0 {
             mask |= 1 << tilemap[[row, col - 1]]
         }
-        if col < width - 1 {
+        if col < width_offset - 1 {
             mask |= 1 << tilemap[[row, col + 1]]
         }
         cache[[row, col]] = mask;
