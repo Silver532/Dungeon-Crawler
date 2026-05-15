@@ -62,6 +62,7 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         }
     }
 }
+
 #[timeit("Stage 1")]
 fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
     let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
