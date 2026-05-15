@@ -235,21 +235,31 @@ pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>
         }
     }
 
-    for ((row, col), _) in tilemap.indexed_iter() {
-        let mut mask: u16 = 0;
-        if row > 0 {
-            mask |= 1 << tilemap[[row - 1, col]]
+    let tilemap_raw: &[u8] = tilemap.as_slice().unwrap();
+    let cache_raw: &mut [u16] = cache.as_slice_mut().unwrap();
+
+    for row in 1..height_offset - 1 {
+        for col in 1..width_offset - 1 {
+            let idx: usize = row * width_offset + col;
+            cache_raw[idx] =
+                (1 << tilemap_raw[idx - width_offset]) |
+                (1 << tilemap_raw[idx + width_offset]) |
+                (1 << tilemap_raw[idx - 1]) |
+                (1 << tilemap_raw[idx + 1]);
         }
-        if row < height_offset - 1 {
-            mask |= 1 << tilemap[[row + 1, col]]
+    }
+
+    for row in 0..height_offset {
+        for col in 0..width_offset {
+            if row > 0 && row < height_offset - 1 && col > 0 && col < width_offset - 1 { continue; }
+            let idx: usize = row * width_offset + col;
+            let mut mask: u16 = 0;
+            if row > 0               { mask |= 1 << tilemap_raw[idx - width_offset]; }
+            if row < height_offset-1 { mask |= 1 << tilemap_raw[idx + width_offset]; }
+            if col > 0               { mask |= 1 << tilemap_raw[idx - 1]; }
+            if col < width_offset-1  { mask |= 1 << tilemap_raw[idx + 1]; }
+            cache_raw[idx] = mask;
         }
-        if col > 0 {
-            mask |= 1 << tilemap[[row, col - 1]]
-        }
-        if col < width_offset - 1 {
-            mask |= 1 << tilemap[[row, col + 1]]
-        }
-        cache[[row, col]] = mask;
     }
 
     place_features(tilemap, cache, themes, rng)
