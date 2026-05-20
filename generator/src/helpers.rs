@@ -651,7 +651,7 @@ pub mod feature_placement {
     const NO_PARAMS: ScanParams = ScanParams{require: 0, block: 0, bias: 0, place_on: None};
 
     pub const SCAN_PARAMS: [ScanParams; 17] = {
-        let mut p = [NO_PARAMS; 17];
+        let mut p: [ScanParams; 17] = [NO_PARAMS; 17];
 
         const WALL:           u16 = 1 << 0;
         const FLOOR:          u16 = 1 << 1;

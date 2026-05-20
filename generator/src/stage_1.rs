@@ -70,11 +70,11 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
 
 #[timeit("Stage 1")]
 fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
-    let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
-    let north: ArrayView2<u8>  = tiles.slice(slice![..-2, 1..-1]);
-    let east: ArrayView2<u8>   = tiles.slice(slice![1..-1, 2..]);
-    let south: ArrayView2<u8>  = tiles.slice(slice![2.., 1..-1]);
-    let west: ArrayView2<u8>   = tiles.slice(slice![1..-1, ..-2]);
+    let tiles:  Array2<u8>     = tilemap.mapv(|v: u8| if v != 0 {1} else {0});
+    let north:  ArrayView2<u8> = tiles.slice(slice![..-2, 1..-1]);
+    let east:   ArrayView2<u8> = tiles.slice(slice![1..-1, 2..]);
+    let south:  ArrayView2<u8> = tiles.slice(slice![2.., 1..-1]);
+    let west:   ArrayView2<u8> = tiles.slice(slice![1..-1, ..-2]);
     let centre: ArrayView2<u8> = tiles.slice(slice![1..-1, 1..-1]);
 
     let connections: Array2<u8> = (&north
@@ -121,10 +121,10 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         };
 
         for i in chosen {
-            let dy = s1::DY_DX[i][0] as isize;
-            let dx = s1::DY_DX[i][1] as isize;
-            let ny = (row as isize + dy) as usize;
-            let nx = (col as isize + dx) as usize;
+            let dy: isize = s1::DY_DX[i][0] as isize;
+            let dx: isize = s1::DY_DX[i][1] as isize;
+            let ny: usize = (row as isize + dy) as usize;
+            let nx: usize = (col as isize + dx) as usize;
             tilemap[[row,col]] |= s1::DIR_BITS[i];
             tilemap[[ny,nx]] |= s1::OPP_BITS[i]
         }
