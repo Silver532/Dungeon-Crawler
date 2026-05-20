@@ -1,4 +1,8 @@
-use std::{collections::VecDeque, usize};
+#![allow(clippy::reversed_empty_ranges)]
+//Uses ndarray negative indexing, these are not reversed ranges
+//Clippy does not understand this and falsely flags them
+
+use std::collections::VecDeque;
 
 use rand::{Rng, rngs::StdRng, seq::SliceRandom};
 use ndarray::{Array2, ArrayView2, s as slice};
@@ -8,16 +12,16 @@ use crate::helpers::s1;
 
 #[timeit("Stage 1")]
 fn place_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
-    debug_assert!(s1::MAX_BOX_DIM >= 12, "MAX_BOX_DIM too small for box generation ranges");
+    const {assert!(s1::MAX_BOX_DIM >= 12, "MAX_BOX_DIM too small for box generation ranges");}
     for _ in 0..s1::BOX_COUNT {
         let total: usize = rng.random_range(8..s1::MAX_BOX_DIM);
         let height: usize = rng.random_range(2..total-3);
         let width: usize = total - height;
     
         let y_start: usize = rng.random_range(1..s1::MID+1);
-        let y_end: usize = (y_start + height).max(s1::MID+1).min(s1::DUNGEON_SIZE-1);
+        let y_end: usize = (y_start + height).clamp(s1::MID + 1, s1::DUNGEON_SIZE - 1);
         let x_start: usize = rng.random_range(1..s1::MID+1);
-        let x_end: usize = (x_start + width).max(s1::MID+1).min(s1::DUNGEON_SIZE-1);
+        let x_end: usize = (x_start + width).clamp(s1::MID + 1, s1::DUNGEON_SIZE - 1);
     
         tilemap.slice_mut(slice![y_start..y_end, x_start..x_end]).fill(s1::ROOM)
     }
@@ -77,7 +81,7 @@ fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
         | &east.mapv(|v: u8| v << 1)
         | &south.mapv(|v: u8| v << 2)
         | &west.mapv(|v: u8| v << 3))
-        * &centre;
+        * centre;
     return connections
 }
 
@@ -196,13 +200,16 @@ fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
 
     let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 { 1 } else { 0 });
     let empty: Array2<u8> = 1 - &tiles;
-    let north: ArrayView2<u8> = tiles.slice(slice![..-2, 1..-1]);
-    let east: ArrayView2<u8>  = tiles.slice(slice![1..-1, 2..]);
-    let south: ArrayView2<u8> = tiles.slice(slice![2..,  1..-1]);
-    let west: ArrayView2<u8>  = tiles.slice(slice![1..-1, ..-2]);
+    
+    let north:  ArrayView2<u8> = tiles.slice(slice![..-2, 1..-1]);
+    let east:   ArrayView2<u8> = tiles.slice(slice![1..-1, 2..]);
+    let south:  ArrayView2<u8> = tiles.slice(slice![2..,   1..-1]);
+    let west:   ArrayView2<u8> = tiles.slice(slice![1..-1, ..-2]);
     let centre: ArrayView2<u8> = empty.slice(slice![1..-1, 1..-1]);
 
-    let candidates: Array2<u8> = (&north | &east | &south | &west) * &centre;
+    //Ignore for readability - & is not required after an owned copy is made
+    #[allow(clippy::op_ref)]
+    let candidates: Array2<u8> = (&north | &east | &south | &west) * centre;
     
     let indices: Vec<(usize, usize)> = candidates.indexed_iter()
         .filter(|(_, v)| **v != 0)

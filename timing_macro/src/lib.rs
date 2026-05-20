@@ -9,7 +9,7 @@ pub fn timeit(attr: TokenStream, item: TokenStream) -> TokenStream {
     let name: String = input.sig.ident.to_string();
     let vis: &syn::Visibility = &input.vis;
     let sig: &syn::Signature = &input.sig;
-    let block: &Box<syn::Block> = &input.block;
+    let block: &syn::Block = &input.block;
 
     let expanded: proc_macro2::TokenStream = quote! {
         #vis #sig {

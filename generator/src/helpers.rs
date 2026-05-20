@@ -54,7 +54,7 @@ pub mod s1 {
     pub const DIR_BITS: [u8; 4] = [1,2,4,8];
     pub const OPP_BITS: [u8; 4] = [4,8,1,2];
     pub const DY_DX: [[i8; 2]; 4] = [[-1, 0], [0, 1], [1, 0], [0, -1]];
-    pub const MASK_TO_INDICES: [&'static [usize]; 16] = [
+    pub const MASK_TO_INDICES: [&[usize]; 16] = [
         &[],          // 0000
         &[0],         // 0001 N
         &[1],         // 0010 E
@@ -633,7 +633,7 @@ pub mod feature_placement {
         }
     }
 
-    pub fn map<'a>(theme: Theme, rng: &'a mut StdRng) -> [u8; 17] {
+    pub fn map(theme: Theme, rng: &mut StdRng) -> [u8; 17] {
         let mut counts: [u8; 17] = [0u8; 17];
         for (tile, value) in table(theme) {
             counts[*tile as usize] = value.resolve(rng);

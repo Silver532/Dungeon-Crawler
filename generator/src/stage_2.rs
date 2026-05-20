@@ -40,8 +40,8 @@ fn get_theme_map(shape_map: &Array2<u8>, rng: &mut StdRng) -> Array2<u8> {
 
 #[timeit("Stage 2")]
 pub fn plan_rooms(dungeon_map: &Array2<u8>, rng: &mut StdRng) -> (Array2<u8>, Array2<u8>) {
-    let entrance_room: (usize, usize) = get_entrance_room(&dungeon_map, rng);
-    let shape_map: Array2<u8> = get_shape_map(&dungeon_map, entrance_room, rng);
+    let entrance_room: (usize, usize) = get_entrance_room(dungeon_map, rng);
+    let shape_map: Array2<u8> = get_shape_map(dungeon_map, entrance_room, rng);
     let theme_map: Array2<u8> = get_theme_map(&shape_map, rng);
     (shape_map, theme_map)
 }

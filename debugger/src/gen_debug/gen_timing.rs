@@ -39,6 +39,6 @@ pub fn write_report(run_count: u16) {
                 first.as_secs_f64() * 1000.0,
             ).unwrap();
         }
-        writeln!(file, "").unwrap();
+        writeln!(file).unwrap();
     }
 }

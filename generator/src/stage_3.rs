@@ -1,3 +1,7 @@
+#[allow(clippy::reversed_empty_ranges)]
+//Uses ndarray negative indexing, these are not reversed ranges
+//Clippy does not understand this and falsely flags them
+
 use ndarray::{Array2, ArrayViewMut2, Dimension, s};
 use rand::{Rng, rngs::StdRng, seq::IndexedRandom};
 use timing_macro::timeit;
@@ -164,9 +168,9 @@ fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0:
     }
 
     if !biased.is_empty() {
-        candidates.extend_from_slice(&biased);
-        candidates.extend_from_slice(&biased);
-        candidates.extend_from_slice(&biased);
+        candidates.extend_from_slice(biased);
+        candidates.extend_from_slice(biased);
+        candidates.extend_from_slice(biased);
     }
 }
 

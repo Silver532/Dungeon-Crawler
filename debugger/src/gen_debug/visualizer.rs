@@ -33,6 +33,8 @@ fn exits_string(val: u8) -> String {
     }
 }
 
+//Left for readability, this is not used enough for the change to matter
+#[allow(clippy::too_many_arguments)]
 fn show_viewport<C, H>(
     ctx: &egui::Context,
     seed: u64,
