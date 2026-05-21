@@ -40,7 +40,7 @@ fn erode_boxes(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
                 let val: u8 = current[[row, col]];
                 if val == 0 { 
                     next[[row, col]] = 0;
-                    continue; 
+                    continue
                 }
                 let neighbors: u8 =
                     (current[[row-1, col-1]] != 0) as u8 +
@@ -82,7 +82,7 @@ fn get_possible_connections(tilemap: &Array2<u8>) -> Array2<u8> {
         | &south.mapv(|v: u8| v << 2)
         | &west.mapv(|v: u8| v << 3))
         * centre;
-    return connections
+    connections
 }
 
 #[timeit("Stage 1")]
@@ -99,7 +99,7 @@ fn connect_rooms(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         let available: u8 = mask.count_ones() as u8;
         if available == 0 {
             tilemap[[row, col]] = 0;
-            continue;
+            continue
         }
 
         let connect_count: u8 = match rng.random::<f32>() {
@@ -142,7 +142,7 @@ fn clear_rooms(tilemap: &mut Array2<u8>) {
     for row in 0..rows {
         for col in 0..cols {
             if tilemap[[row, col]] == 0 || visited[[row, col]] {
-                continue;
+                continue
             }
 
             let mut queue: VecDeque<(usize, usize)> = VecDeque::new();
@@ -157,7 +157,7 @@ fn clear_rooms(tilemap: &mut Array2<u8>) {
 
                 for i in 0..4 {
                     if val & (1 << i) == 0 {
-                        continue;
+                        continue
                     }
 
                     let nr: usize = (r as isize + s1::DY_DX[i][0] as isize) as usize;
@@ -196,7 +196,7 @@ fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
         .filter(|(_, v)| v.count_ones() == 2)
         .map(|((r, c), _)| (r, c))
         .collect();
-    if !one_exit_list.is_empty() {return;}
+    if !one_exit_list.is_empty() { return }
 
     let tiles: Array2<u8> = tilemap.mapv(|v: u8| if v != 0 { 1 } else { 0 });
     let empty: Array2<u8> = 1 - &tiles;
@@ -219,7 +219,7 @@ fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     if indices.is_empty() {
         tilemap[[s1::MID, s1::MID]]     = s1::ROOM | s1::SOUTH;
         tilemap[[s1::MID + 1, s1::MID]] = s1::ROOM | s1::NORTH;
-        return;
+        return
     }
 
     let (row, col) = indices[rng.random_range(0..indices.len())];
@@ -227,13 +227,13 @@ fn prep_entrance(tilemap: &mut Array2<u8>, rng: &mut StdRng) {
     for (i, [dy, dx]) in s1::DY_DX.iter().enumerate() {
         let nr: i8 = row as i8 + dy;
         let nc: i8 = col as i8 + dx;
-        if nr < 0 || nc < 0 { continue; }
+        if nr < 0 || nc < 0 { continue }
         let (nr, nc) = (nr as usize, nc as usize);
-        if nr >= rows || nc >= cols { continue; }
+        if nr >= rows || nc >= cols { continue }
         if tilemap[[nr, nc]] != 0 {
             tilemap[[row, col]] = s1::ROOM | s1::OPP_BITS[i];
             tilemap[[nr, nc]] |= s1::DIR_BITS[i];
-            return;
+            return
         }
     }
 }

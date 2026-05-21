@@ -156,14 +156,14 @@ fn scan_room(tilemap: &Array2<u8>, cache: &Array2<u16>, params: &ScanParams, y0:
             let abs_col: usize = x0 + col;
             let idx: usize = abs_row * width + abs_col;
             let tile_bit: u16 = 1 << tilemap_raw[idx];
-            if tile_bit & place_on == 0 {continue;}
+            if tile_bit & place_on == 0 { continue }
             let neighbors: u16 = cache_raw[idx];
-            if params.require != 0 && neighbors & params.require == 0 {continue;}
-            if params.block != 0 && neighbors & params.block != 0 {continue;}
+            if params.require != 0 && neighbors & params.require == 0 { continue }
+            if params.block != 0 && neighbors & params.block != 0 { continue }
             if params.bias != 0 && neighbors & params.bias != 0 {
-                biased.push((abs_row, abs_col));
+                biased.push((abs_row, abs_col))
             }
-            candidates.push((abs_row, abs_col));
+            candidates.push((abs_row, abs_col))
         }
     }
 
@@ -181,7 +181,7 @@ fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &A
     let mut biases: Vec<(usize, usize)> = Vec::new();
     for ((row, col), &val) in theme_map.indexed_iter() {
         let theme: Theme = Theme::from(val);
-        if matches!(theme, Theme::Null | Theme::Empty | Theme::Entrance) {continue;}
+        if matches!(theme, Theme::Null | Theme::Empty | Theme::Entrance) { continue }
 
         let y0: usize = row * ROOM_SIZE;
         let x0: usize = col * ROOM_SIZE;
@@ -189,12 +189,12 @@ fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &A
 
         for feature in FEATURE_ORDER {
             let count: u8 = counts[feature as usize];
-            if count == 0 {continue;}
+            if count == 0 { continue }
 
             let params: &ScanParams = &feature_placement::SCAN_PARAMS[feature as usize];
 
             scan_room(&tilemap, &cache, params, y0, x0, &mut candidates, &mut biases);
-            if candidates.is_empty() {continue;}
+            if candidates.is_empty() { continue }
 
             let quota: usize = count.min(candidates.len() as u8) as usize;
             let chosen = candidates.choose_multiple(rng, quota);
@@ -211,7 +211,7 @@ fn place_features(mut tilemap: Array2<u8>, mut cache: Array2<u16>, theme_map: &A
                 if r < height - 1  {cache[[r + 1, c]] |= bit;}
                 if c > 0           {cache[[r, c - 1]] |= bit;}
                 if c < width - 1   {cache[[r, c + 1]] |= bit;}
-                cache[[r, c]] |= bit;
+                cache[[r, c]] |= bit
             }
         }
     }
@@ -235,7 +235,7 @@ pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>
                 y0..y0 + ROOM_SIZE,
                 x0..x0 + ROOM_SIZE
             ]);
-            build_room(slice, val, shape, rng);
+            build_room(slice, val, shape, rng)
         }
     }
 
@@ -249,20 +249,20 @@ pub fn build_tilemap(layout: Array2<u8>, shapes: Array2<u8>, themes: &Array2<u8>
                 (1 << tilemap_raw[idx - width_offset]) |
                 (1 << tilemap_raw[idx + width_offset]) |
                 (1 << tilemap_raw[idx - 1]) |
-                (1 << tilemap_raw[idx + 1]);
+                (1 << tilemap_raw[idx + 1])
         }
     }
 
     for row in 0..height_offset {
         for col in 0..width_offset {
-            if row > 0 && row < height_offset - 1 && col > 0 && col < width_offset - 1 {continue;}
+            if row > 0 && row < height_offset - 1 && col > 0 && col < width_offset - 1 { continue }
             let idx: usize = row * width_offset + col;
             let mut mask: u16 = 0;
-            if row > 0               {mask |= 1 << tilemap_raw[idx - width_offset];}
-            if row < height_offset-1 {mask |= 1 << tilemap_raw[idx + width_offset];}
-            if col > 0               {mask |= 1 << tilemap_raw[idx - 1];}
-            if col < width_offset-1  {mask |= 1 << tilemap_raw[idx + 1];}
-            cache_raw[idx] = mask;
+            if row > 0               {mask |= 1 << tilemap_raw[idx - width_offset]}
+            if row < height_offset-1 {mask |= 1 << tilemap_raw[idx + width_offset]}
+            if col > 0               {mask |= 1 << tilemap_raw[idx - 1]}
+            if col < width_offset-1  {mask |= 1 << tilemap_raw[idx + 1]}
+            cache_raw[idx] = mask
         }
     }
 

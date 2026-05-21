@@ -53,8 +53,8 @@ where
     H: Fn(usize, usize) -> String + Send + Sync + 'static,
 {
     let viewport_id = egui::ViewportId::from_hash_of((seed, stage as u8));
-    let width = cols as f32 * tile_size;
-    let height = rows as f32 * tile_size + text_height;
+    let width: f32 = cols as f32 * tile_size;
+    let height: f32 = rows as f32 * tile_size + text_height;
 
     ctx.show_viewport_deferred(
         viewport_id,
@@ -71,13 +71,13 @@ where
             egui::Area::new(egui::Id::new("visualizer_area"))
                 .fixed_pos([0.0, 0.0])
                 .show(ctx, |ui| {
-                    let painter = ui.painter();
+                    let painter: &egui::Painter = ui.painter();
 
                     // Draw tiles
                     for row in 0..rows {
                         for col in 0..cols {
-                            let color = color_fn(row, col);
-                            let rect = egui::Rect::from_min_size(
+                            let color: egui::Color32 = color_fn(row, col);
+                            let rect: egui::Rect = egui::Rect::from_min_size(
                                 egui::pos2(col as f32 * tile_size, row as f32 * tile_size),
                                 egui::vec2(tile_size, tile_size),
                             );
@@ -88,8 +88,8 @@ where
                     // Hover detection and info text
                     if text_height > 0.0 {
                         let hovered = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
-                            let col = (pos.x / tile_size) as usize;
-                            let row = (pos.y / tile_size) as usize;
+                            let col: usize = (pos.x / tile_size) as usize;
+                            let row: usize = (pos.y / tile_size) as usize;
                             if pos.y < rows as f32 * tile_size && row < rows && col < cols {
                                 Some((row, col))
                             } else {
@@ -123,11 +123,11 @@ pub fn show_stage_1(
 ) {
     let CachedStage::Stage1 { layout } = data else { return };
 
-    let layout = Arc::new(layout.clone());
-    let layout_hover = Arc::clone(&layout);
+    let layout: Arc<Array2<u8>> = Arc::new(layout.clone());
+    let layout_hover: Arc<Array2<u8>> = Arc::clone(&layout);
 
-    let rows = layout.nrows();
-    let cols = layout.ncols();
+    let rows: usize = layout.nrows();
+    let cols: usize = layout.ncols();
 
     show_viewport(
         ctx,
@@ -159,16 +159,16 @@ pub fn show_stage_2(
 ) {
     let CachedStage::Stage2 { layout, shape_map, theme_map } = data else { return };
 
-    let layout = Arc::new(layout.clone());
-    let shape_map = Arc::new(shape_map.clone());
-    let theme_map = Arc::new(theme_map.clone());
+    let layout: Arc<Array2<u8>> = Arc::new(layout.clone());
+    let shape_map: Arc<Array2<u8>> = Arc::new(shape_map.clone());
+    let theme_map: Arc<Array2<u8>> = Arc::new(theme_map.clone());
 
-    let layout_hover = Arc::clone(&layout);
-    let shape_hover = Arc::clone(&shape_map);
-    let theme_hover = Arc::clone(&theme_map);
+    let layout_hover: Arc<Array2<u8>> = Arc::clone(&layout);
+    let shape_hover: Arc<Array2<u8>> = Arc::clone(&shape_map);
+    let theme_hover: Arc<Array2<u8>> = Arc::clone(&theme_map);
 
-    let rows = layout.nrows();
-    let cols = layout.ncols();
+    let rows: usize = layout.nrows();
+    let cols: usize = layout.ncols();
 
     show_viewport(
         ctx,
@@ -202,13 +202,13 @@ pub fn show_stage_3(
 ) {
     let CachedStage::Stage3 { tilemap, theme_map } = data else { return };
 
-    let tilemap = Arc::new(tilemap.clone());
-    let theme_map = Arc::new(theme_map.clone());
-    let tilemap_hover = Arc::clone(&tilemap);
-    let theme_hover = Arc::clone(&theme_map);
+    let tilemap: Arc<Array2<u8>> = Arc::new(tilemap.clone());
+    let theme_map: Arc<Array2<u8>> = Arc::new(theme_map.clone());
+    let tilemap_hover: Arc<Array2<u8>> = Arc::clone(&tilemap);
+    let theme_hover: Arc<Array2<u8>> = Arc::clone(&theme_map);
 
-    let rows = tilemap.nrows();
-    let cols = tilemap.ncols();
+    let rows: usize = tilemap.nrows();
+    let cols: usize = tilemap.ncols();
 
     show_viewport(
         ctx,

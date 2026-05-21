@@ -21,7 +21,7 @@ fn get_shape_map(exit_map: &Array2<u8>, entrance_room: (usize, usize), rng: &mut
     let cols: usize = exit_map.ncols();
     let mut shape_map: Array2<u8> = Array2::zeros((rows, cols));
     for ((row, col), val) in exit_map.indexed_iter() {
-        if (row, col) == entrance_room {shape_map[[row, col]] = Shape::Entrance as u8; continue;}
+        if (row, col) == entrance_room {shape_map[[row, col]] = Shape::Entrance as u8; continue}
         shape_map[[row,col]] = get_room_shape(*val, rng) as u8;
     }
     shape_map
