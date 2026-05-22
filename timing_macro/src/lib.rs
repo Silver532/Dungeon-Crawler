@@ -22,6 +22,5 @@ pub fn timeit(attr: TokenStream, item: TokenStream) -> TokenStream {
             __timeit_result__
         }
     };
-
     TokenStream::from(expanded)
 }

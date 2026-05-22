@@ -6,7 +6,7 @@ use indexmap::IndexMap;
 
 pub fn write_report(run_count: u16) {
     let timings = take();
-    let mut file = File::create("timings.md").expect("failed to create timings.md");
+    let mut file: File = File::create("timings.md").expect("failed to create timings.md");
 
     let mut stages: Vec<(&'static str, IndexMap<&'static str, Vec<std::time::Duration>>)> = timings.into_iter().collect();
     stages.sort_by_key(|(name, _)| *name);
@@ -18,13 +18,13 @@ pub fn write_report(run_count: u16) {
 
         for (name, durations) in functions {
             let total: std::time::Duration = durations.iter().sum();
-            let count = durations.len();
-            let avg_per_call = total / count as u32;
-            let avg_per_run = total / run_count as u32;
-            let min = durations.iter().min().unwrap();
-            let max = durations.iter().max().unwrap();
-            let first = durations.first().unwrap();
-            let last = durations.last().unwrap();
+            let count: usize = durations.len();
+            let avg_per_call: std::time::Duration = total / count as u32;
+            let avg_per_run: std::time::Duration = total / run_count as u32;
+            let min: &std::time::Duration = durations.iter().min().unwrap();
+            let max: &std::time::Duration = durations.iter().max().unwrap();
+            let first: &std::time::Duration = durations.first().unwrap();
+            let last: &std::time::Duration = durations.last().unwrap();
 
             writeln!(file, "| {} | {:.3} | {} | {:.1} | {:.3} | {:.3} | {:.3} | {:.3} | {:.3} | {:.3} |",
                 name,

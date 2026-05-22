@@ -53,7 +53,7 @@ where
     C: Fn(usize, usize) -> egui::Color32 + Send + Sync + 'static,
     H: Fn(usize, usize) -> String + Send + Sync + 'static,
 {
-    let viewport_id = egui::ViewportId::from_hash_of((seed, stage as u8));
+    let viewport_id: egui::ViewportId = egui::ViewportId::from_hash_of((seed, stage as u8));
     let width: f32 = cols as f32 * tile_size;
     let height: f32 = rows as f32 * tile_size + text_height;
 
@@ -88,7 +88,7 @@ where
 
                     // Hover detection and info text
                     if text_height > 0.0 {
-                        let hovered = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
+                        let hovered: Option<(usize, usize)> = ctx.input(|i| i.pointer.hover_pos()).and_then(|pos| {
                             let col: usize = (pos.x / tile_size) as usize;
                             let row: usize = (pos.y / tile_size) as usize;
                             if pos.y < rows as f32 * tile_size && row < rows && col < cols {
@@ -98,7 +98,7 @@ where
                             }
                         });
 
-                        let text = match hovered {
+                        let text: String = match hovered {
                             Some((row, col)) => hover_fn(row, col),
                             None => String::new(),
                         };

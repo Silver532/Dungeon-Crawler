@@ -73,7 +73,7 @@ impl Default for GeneratorState {
 fn generate_seed(input: Option<&str>) -> u64 {
     match input {
         Some(s) => {
-            let mut hasher = FnvHasher::default();
+            let mut hasher: FnvHasher = FnvHasher::default();
             s.hash(&mut hasher);
             hasher.finish()
         }
@@ -122,7 +122,7 @@ pub fn show(
         ui.add_space(16.0);
 
         ui.horizontal(|ui| {
-            let seed_box = ui.add_sized(
+            let seed_box: egui::Response = ui.add_sized(
                 [125.0, 25.0],
                 egui::TextEdit::singleline(&mut generator.seed_string),
             );
@@ -159,10 +159,10 @@ pub fn show(
                     generator.recent_seeds.pop_back();
                 }
 
-                let seed_str = generator.seed_string.trim().to_string();
-                let seed_num = match seed_str.as_str() {
+                let seed_str: String = generator.seed_string.trim().to_string();
+                let seed_num: u64 = match seed_str.as_str() {
                     "Seed" | "" => {
-                        let s = generate_seed(None);
+                        let s: u64 = generate_seed(None);
                         generator.recent_seeds.push_front(s.to_string());
                         s
                     }
@@ -171,7 +171,7 @@ pub fn show(
                             generator.recent_seeds.push_front(seed_str.clone());
                             n
                         } else {
-                            let s = generate_seed(Some(&seed_str));
+                            let s: u64 = generate_seed(Some(&seed_str));
                             generator.recent_seeds.push_front(seed_str.clone());
                             s
                         }
@@ -181,7 +181,7 @@ pub fn show(
                 if generator.time_check {
                     time_test(&generator.selected_stage, generator.test_count);
                 } else {
-                    let key = (seed_num, generator.selected_stage);
+                    let key: (u64, Stages) = (seed_num, generator.selected_stage);
                     generator.cache.entry(key).or_insert_with(|| {
                         run_and_cache(&generator.selected_stage, seed_num)
                     });
@@ -200,7 +200,7 @@ pub fn show(
         }
     });
 
-    let ctx = ui.ctx().clone();
+    let ctx: egui::Context = ui.ctx().clone();
     let active: Vec<(u64, Stages)> = generator.active_viewports.lock().clone();
     for (seed, stage) in active {
         if let Some(data) = generator.cache.get(&(seed, stage)) {
