@@ -4,6 +4,7 @@ use eframe::egui::{self, mutex::Mutex};
 use egui::ViewportBuilder;
 use generator::helpers::constants::ROOM_SIZE;
 use generator::helpers::enums::{Shape, Theme, Tile};
+use ndarray::Array2;
 
 use super::Stages;
 use super::CachedStage;

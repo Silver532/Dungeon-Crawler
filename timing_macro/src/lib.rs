@@ -13,12 +13,10 @@ pub fn timeit(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let expanded: proc_macro2::TokenStream = quote! {
         #vis #sig {
-            #[cfg(feature = "timing")]
             let __timeit_start__ = std::time::Instant::now();
 
             let __timeit_result__ = (|| #block)();
 
-            #[cfg(feature = "timing")]
             crate::timing::record(#stage, #name, __timeit_start__.elapsed());
 
             __timeit_result__

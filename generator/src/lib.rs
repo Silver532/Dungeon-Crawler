@@ -5,7 +5,6 @@ mod stage_2;
 mod stage_3;
 pub mod helpers;
 
-#[cfg(feature = "timing")]
 pub mod timing;
 
 pub use timing_macro::timeit;
