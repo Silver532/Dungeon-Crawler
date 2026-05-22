@@ -738,18 +738,18 @@ mod theme_tables {
     );
     pub const TABLE_CORNER:       ([Theme; 7], [u8; 7]) = (
         [Theme::CrTrapped, Theme::CrTreasure, Theme::CrGuarded, Theme::CrChaos, Theme::CrBasic, Theme::CrFlooded, Theme::Empty],
-        [20, 10, 15, 10, 25, 10, 10]
+        [20, 10, 15, 10, 26, 11, 8]
     );
     pub const TABLE_HALF:         ([Theme; 7], [u8; 7]) = (
         [Theme::HrTrapped, Theme::HrTreasure, Theme::HrGuarded, Theme::HrChaos, Theme::HrBasic, Theme::HrFlooded, Theme::Empty],
-        [20, 10, 15, 10, 25, 10, 10]
+        [21, 11, 15, 10, 25, 10, 8]
     );
     pub const TABLE_SMALL_CIRCLE: ([Theme; 7], [u8; 7]) = (
         [Theme::ScTrapped, Theme::ScTreasure, Theme::ScGuarded, Theme::ScChaos, Theme::ScBasic, Theme::ScFlooded, Theme::Empty],
-        [20, 10, 15, 10, 25, 10, 10]
+        [20, 10, 16, 11, 25, 10, 8]
     );
     pub const TABLE_LARGE_CIRCLE: ([Theme; 8], [u8; 8]) = (
         [Theme::LcTrapped, Theme::LcTreasure, Theme::LcHealthy, Theme::LcGuarded, Theme::LcChaos, Theme::LcBasic, Theme::LcFlooded, Theme::Empty],
-        [20,  5,  5, 15, 10, 25, 10, 10]
+        [20,  6,  5, 16, 10, 25, 10, 8]
     );
 }

@@ -101,7 +101,7 @@ fn build_room(mut view: ArrayViewMut2<u8>, val: u8, shape: Shape, rng: &mut StdR
             view.slice_mut(s![HALF-2..=HALF+2, HALF-4..=HALF+4]).fill(Tile::Floor as u8);
         }
         Shape::LargeCircle => {
-            view.slice_mut(s![HALF-7..=HALF+7, HALF-2..=HALF+2]).fill(Tile::Floor as u8);
+            view.slice_mut(s![HALF-7..=HALF+7, HALF-3..=HALF+3]).fill(Tile::Floor as u8);
             view.slice_mut(s![HALF-6..=HALF+6, HALF-4..=HALF+4]).fill(Tile::Floor as u8);
             view.slice_mut(s![HALF-5..=HALF+5, HALF-5..=HALF+5]).fill(Tile::Floor as u8);
             view.slice_mut(s![HALF-4..=HALF+4, HALF-6..=HALF+6]).fill(Tile::Floor as u8);
